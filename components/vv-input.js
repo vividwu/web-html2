@@ -18,9 +18,9 @@ static get properties() {
             coreCss,
             css`
           :host {
-            display:flex;flex-direction:row;padding:0px;
-            flex: 0 0 100%;
-            max-width: 100%;}
+            display: flex;
+    max-width: 100%;
+    flex: 0 0 100%;}
         `
         ]
     }
@@ -44,7 +44,7 @@ constructor() {
         this._value = value;
     }
   render(){console.log(this.noLabel);debugger
-    return html`${this.noLabel?this.withOutLabel():this.withLabel()}`;
+    return html`<input id="input" type="email" class="form-control form-control-sm" placeholder="${this.placeholder}" value="${this._value}"/>`;
   }
   withLabel(){
     return html`<label class="col-sm-3 col-form-label text-sm-right">${this.labelName}</label><div class="col-sm-9">

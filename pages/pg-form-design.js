@@ -7,7 +7,7 @@ import {Sortable} from '../sortable.core.esm-1.15.0.js';
 import { VvTab } from '../components/vv-tab.js';
 import { VvTabContent } from '../components/vv-tab-content.js';
 import { VvSelect } from '../components/vv-select.js';
-
+import {VvIcon } from '../components/vv-icon.js'
 import {TestApi} from '../webapi.js';
 
 class PgFormDesign extends LitElement {
@@ -172,7 +172,11 @@ class PgFormDesign extends LitElement {
             if(con.type === 'button'){
                 return html`<vv-button>test</vv-button>`
             }else if (con.type === 'input') {
-                return html`<vv-input name="${con.id}" labelName="${con.labelName}" class="nested-1 col-sm-${con.size}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-input>`
+                return html`<div class="citem nested-1 col-sm-${con.size}">
+                <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
+                    <div class="col-sm-9"><vv-input name="${con.id}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-input></div>
+                    ${this.selectedId===con.id?html`<vv-icon name="close-circle-fill" color="#ed5565" class="elem-delete"></vv-icon>`:""}
+                </div>`
             }else if (con.type === 'select') {
                 return html`<vv-select name="${con.id}" labelName="${con.labelName}" class="nested-1 col-sm-${con.size}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-select>`
             }else if (con.type === 'card') {

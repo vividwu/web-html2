@@ -529,6 +529,9 @@ select {
   
   .font-weight-bold {
   font-weight: 500 !important; }
+.citem{
+    display:flex;/*flex-direction:row;padding:0px;flex: 0 0 100%;max-width: 100%;*/
+}
 /*todo 抽组件*/
   .bullet {
     display: inline-block;
@@ -565,6 +568,29 @@ select {
   @media (prefers-reduced-motion: reduce) {
     .form-control {
       transition: none; } }
+/*   
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    padding: 6px 0;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.428571429;
+}
+.btn-danger {
+    background-color: #ed5565;
+    border-color: #ed5565;
+    color: #FFFFFF;
+}*/
+.elem-delete {
+    position: absolute;
+    right: 15px;
+    top: -10px;
+    z-index: 999;
+    cursor:pointer
+}
+
   .form-control::-ms-expand {
     background-color: transparent;
     border: 0; }
