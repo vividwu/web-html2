@@ -9,7 +9,7 @@
 		<!--begin::Fonts-->
 		<!--end::Fonts-->
 		<!--begin::Global Theme Styles(used by all pages)-->
-		<link href="/assets/css/style.base.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/style.base.css" rel="stylesheet" type="text/css" />
 		<!--end::Global Theme Styles-->
 		<!--begin::Layout Themes(used by all pages)-->
 		<style>
@@ -20,9 +20,12 @@
 			</style>
 		<!--end::Layout Themes-->
 		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
-		<script type="module" src="/home/pg-index.js"></script>
-		<script type="module" src="/home/pg-form-design.js"></script>
+		<script type="module" src="./pages/pg-index.js"></script>
+		<script type="module" src="./pages/pg-form-design.js"></script>
 		<script type="module" src="/router.js"></script>
+		<script type="module">
+			import './components/vv-card.js';
+		</script>
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->

@@ -13,18 +13,25 @@ const routes = [{
 		},
 			{
 				path: 'flow',
-				component: 'pg-flow-list',
+				/*component: 'pg-flow-list',
 				action: async () => {
-				  await import('./pages/flow/pg-flow-list.js');
-				},
+				  await import('./flow/pg-flow-list.js');
+				},*/
 				children: [
 				   {
 						path: 'apply',
 						component: 'pg-flow-apply',
 						action: async () => {
-						  await import('./pages/flow/pg-flow-apply.js');
+						  await import('./flow/pg-flow-apply.js');
 						},
-				   },
+				   },/**/
+					{
+						path: 'approve',
+						component: 'approve-page',
+						action: async () => {
+							await import('./flow/apply-page.js');
+						},
+					},
 				  {
 					path: 'flow/about',
 					component: 'lit-about2',
@@ -38,19 +45,19 @@ const routes = [{
 				path: 'home',
 				component: 'pg-home',
 				action: async () => {
-				  await import('./pages/pg-home.js');  //:80/about 框架内
+				  await import('./home/pg-home.js');  //:80/about 框架内
 				},
 		  },
-		  {
+		  /*{
 			 path: 'flow',
 				children: [{
 					 path: 'apply',
 					 component: 'flow-page',
 					 action: async () => {
-					await import('./pages/flow/apply-page.js');  //:80/flow/apply 框架内
+					await import('./flow/apply-page.js');  //:80/flow/apply 框架内
 			  },
 			  },]
-		  },
+		  },*/
     ],
   },
 ];
