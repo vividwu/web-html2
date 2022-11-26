@@ -8,6 +8,7 @@ import { VvTab } from '../components/vv-tab.js';
 import { VvTabContent } from '../components/vv-tab-content.js';
 import { VvSelect } from '../components/vv-select.js';
 import {VvIcon } from '../components/vv-icon.js'
+import { VvEditTable } from '../components/vv-edit-table.js'
 import {TestApi} from '../webapi.js';
 
 class PgFormDesign extends LitElement {
@@ -112,6 +113,8 @@ class PgFormDesign extends LitElement {
         this._formControls = [
             {"id":"g1","type":"card","child":[{"id":"v1","type":"input","labelName":"bianhao","size":12},{"id":"v4","type":"select","labelName":"gangwei","size":12}]},
             {"id":"v2","type":"input","labelName":"renyuan","size":12},
+            {"id":"Table_1644202096899","type":"table","labelName":"明细表","columns":[{"type":"input","labelName":"编号","id":"no"},
+                    {"type":"input","labelName":"姓名","id":"name"}]},
             {"id":"g3","type":"card","child":[{"id":"v3","type":"input","labelName":"bumen","size":12}]}]
         // let vc = new VvCard();
         // vc.id = "g1";
@@ -145,7 +148,7 @@ class PgFormDesign extends LitElement {
 
         <div class="main-content">
             <div class="row">
-                <div class="col-lg-12 nested-1" id="nestedDemo">
+                <div class="col-lg-12 nested-1" id="nestedDemo"><vv-edit-table></vv-edit-table>
                     ${this._formControls.map(i => this.renderFormControl(i) )}
                 </div>
             </div>
@@ -179,6 +182,10 @@ class PgFormDesign extends LitElement {
                 </div>`
             }else if (con.type === 'select') {
                 return html`<vv-select name="${con.id}" labelName="${con.labelName}" class="nested-1 col-sm-${con.size}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-select>`
+            }else if (con.type === 'table') {
+                let columns = JSON.stringify(con.columns);
+                let tableData = JSON.stringify([{'no':'456','name':'test02','age':18},{'no':'789','name':'test03','age':38}]);
+                return html`<vv-edit-table name="${con.id}" labelName="${con.labelName}" column="${columns}" data="${tableData}" class="nested-1 col-sm-12" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-edit-table>`
             }else if (con.type === 'card') {
                 if (con.child) {
                     return html`<vv-card name="${con.id}" class="nested-1">${con.child.map(i => this.renderFormControl(i) )}</vv-card>`

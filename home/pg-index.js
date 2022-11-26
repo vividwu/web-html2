@@ -20,7 +20,7 @@ class PgIndex extends LitElement {
         ]
     }
     render(){
-        return html`asd
+        return html`
       <slot></slot>
     `;
     }

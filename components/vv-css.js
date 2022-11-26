@@ -159,7 +159,13 @@ select {
   transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
   a:hover {
     transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
-
+a:not([href]):not([class]) {
+  color: inherit;
+  text-decoration: none; }
+  a:not([href]):not([class]):hover {
+    color: inherit;
+    text-decoration: none; }
+    
     .btn {
   display: inline-block;
   font-weight: normal;
@@ -274,6 +280,11 @@ select {
     color: #B5B5C3;
     background-color: #F2F9FF;
     border-color: transparent;
+}
+.btn.btn-primary {
+    color: #FFFFFF;
+    background-color: #3699FF;
+    border-color: #3699FF;
 }
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col,
 .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
