@@ -18,6 +18,13 @@ const routes = [{
 				  await import('./flow/pg-flow-list.js');
 				},*/
 				children: [
+					{
+						path: 'todo',
+						component: 'pg-flow-todo',
+						action: async () => {
+							await import('./flow/pg-flow-todo.js');
+						},
+					},
 				   {
 						path: 'apply',
 						component: 'pg-flow-apply',

@@ -286,6 +286,31 @@ a:not([href]):not([class]) {
     background-color: #3699FF;
     border-color: #3699FF;
 }
+.btn.btn-primary:hover:not(.btn-text):not(:disabled):not(.disabled), .btn.btn-primary:focus:not(.btn-text), .btn.btn-primary.focus:not(.btn-text) {
+  color: #FFFFFF;
+  background-color: #187DE4;
+  border-color: #187DE4; }
+.btn.btn-primary:hover:not(.btn-text):not(:disabled):not(.disabled) i, .btn.btn-primary:focus:not(.btn-text) i, .btn.btn-primary.focus:not(.btn-text) i {
+  color: #FFFFFF; }
+.btn.btn-primary:hover:not(.btn-text):not(:disabled):not(.disabled) .svg-icon svg g [fill], .btn.btn-primary:focus:not(.btn-text) .svg-icon svg g [fill], .btn.btn-primary.focus:not(.btn-text) .svg-icon svg g [fill] {
+  transition: fill 0.3s ease;
+  fill: #FFFFFF; }
+.btn.btn-primary:hover:not(.btn-text):not(:disabled):not(.disabled) .svg-icon svg:hover g [fill], .btn.btn-primary:focus:not(.btn-text) .svg-icon svg:hover g [fill], .btn.btn-primary.focus:not(.btn-text) .svg-icon svg:hover g [fill] {
+  transition: fill 0.3s ease; }
+.btn.btn-primary:hover:not(.btn-text):not(:disabled):not(.disabled).dropdown-toggle:after, .btn.btn-primary:focus:not(.btn-text).dropdown-toggle:after, .btn.btn-primary.focus:not(.btn-text).dropdown-toggle:after {
+    color: #FFFFFF; }
+.btn.btn-primary.disabled, .btn.btn-primary:disabled {
+  color: #FFFFFF;
+  background-color: #3699FF;
+  border-color: #3699FF; }
+.btn.btn-primary.disabled i, .btn.btn-primary:disabled i {
+  color: #FFFFFF; }
+.btn.btn-primary.disabled .svg-icon svg g [fill], .btn.btn-primary:disabled .svg-icon svg g [fill] {
+  transition: fill 0.3s ease;
+  fill: #FFFFFF; }
+.btn.btn-primary.disabled .svg-icon svg:hover g [fill], .btn.btn-primary:disabled .svg-icon svg:hover g [fill] {
+      transition: fill 0.3s ease; }
+      
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col,
 .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
 .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
@@ -472,6 +497,19 @@ a:not([href]):not([class]) {
 .mb-2,
 .my-2 {
   margin-bottom: 0.5rem !important; }
+.pb-2, .py-2 {
+    padding-bottom: 0.5rem !important;
+}
+.pt-2, .py-2 {
+    padding-top: 0.5rem !important;
+}
+.pl-4, .px-4 {
+    padding-left: 1rem !important;
+}
+
+.pr-4, .px-4 {
+    padding-right: 1rem !important;
+}
   .m-5 {
   margin: 1.25rem !important; }
 .mt-5,

@@ -113,81 +113,84 @@ class PgFormDesign extends LitElement {
         this._formControls = [
             {"id":"g1","type":"card","child":[{"id":"v1","type":"input","labelName":"bianhao","size":12},{"id":"v4","type":"select","labelName":"gangwei","size":12}]},
             {"id":"v2","type":"input","labelName":"renyuan","size":12},
-            {"id":"Table_1644202096899","type":"table","labelName":"明细表","columns":[{"type":"input","labelName":"编号","id":"no"},
-                    {"type":"input","labelName":"姓名","id":"name"}]},
-            {"id":"g3","type":"card","child":[{"id":"v3","type":"input","labelName":"bumen","size":12}]}]
-        // let vc = new VvCard();
-        // vc.id = "g1";
-        // let vi = new VvInput();
-        // vi.id = "v1";
-        // vi.labelName = "bianhao";
-        // vc.child = [];
-        // vc.child.push(vi);
-        // this._formControls.push(vc);
-        //
-        // let vi2 = new VvInput();
-        // vi2.id = "v2";
-        // vi2.labelName = "renyuan";
-        // this._formControls.push(vi2);
-        //
-        // let vc2 = new VvCard();
-        // vc2.id = "g2";
-        // let vi3 = new VvInput();
-        // vi3.id = "v3";
-        // vi3.labelName = "bumen";
-        // vc2.child = [];
-        // vc2.child.push(vi3);
-        // this._formControls.push(vc2);
-    }
-    render(){console.log("pg-form-design render")
-        return html`<div class="page-content gray-bg">
-	<div class="top-header panel panel-custom panel-white panel-shadow gutter-b">
-	    <div class="panel-text">page-top</div>
-	    <vv-button @click="${this.getFormData}">get data</vv-button>
-	</div>
-
-        <div class="main-content">
-            <div class="row">
-                <div class="col-lg-12 nested-1" id="nestedDemo"><vv-edit-table></vv-edit-table>
-                    ${this._formControls.map(i => this.renderFormControl(i) )}
+                {"id":"Table_1644202096899","type":"table","labelName":"明细表","column":[{"type":"input","labelName":"编号","id":"no"},
+                        {"type":"input","labelName":"姓名","id":"name"}]},
+                {"id":"g3","type":"card","child":[{"id":"v3","type":"input","labelName":"bumen","size":12}]}]
+            // let vc = new VvCard();
+            // vc.id = "g1";
+            // let vi = new VvInput();
+            // vi.id = "v1";
+            // vi.labelName = "bianhao";
+            // vc.child = [];
+            // vc.child.push(vi);
+            // this._formControls.push(vc);
+            //
+            // let vi2 = new VvInput();
+            // vi2.id = "v2";
+            // vi2.labelName = "renyuan";
+            // this._formControls.push(vi2);
+            //
+            // let vc2 = new VvCard();
+            // vc2.id = "g2";
+            // let vi3 = new VvInput();
+            // vi3.id = "v3";
+            // vi3.labelName = "bumen";
+            // vc2.child = [];
+            // vc2.child.push(vi3);
+            // this._formControls.push(vc2);
+        }
+        render(){console.log("pg-form-design render")
+            return html`<div class="page-content gray-bg">
+        <div class="top-header panel panel-custom panel-white panel-shadow gutter-b">
+            <div class="panel-text">page-top</div>
+            <vv-button @click="${this.getFormData}">get data</vv-button>
+        </div>
+    
+            <div class="main-content">
+                <div class="row">
+                    <div class="col-lg-12 nested-1" id="nestedDemo"><vv-edit-table></vv-edit-table>
+                        ${this._formControls.map(i => this.renderFormControl(i) )}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-	<div class="page-side property panel panel-custom panel-white panel-shadow gutter-b">
-	    <vv-tab activekey="c2">
-	        <vv-tab-content key="c1" name="Active1">
-	           ${this.__tableConfig.map(i => this.renderDbFieldItem(i))}
-            </vv-tab-content>
-            <vv-tab-content key="c2" name="Active2">
-                ${this._formControls.map(i => this.renderProperty(i) )}
-            </vv-tab-content>
-        </vv-tab>
-    </div>
-    `;
-    }
-    renderFormControl(con){
-        // data.fields.map(field => {debugger
-        if(!this.__conIds.includes(con.id)){
-            this.__conIds.push(con.id);
+        <div class="page-side property panel panel-custom panel-white panel-shadow gutter-b">
+            <vv-tab activekey="c2">
+                <vv-tab-content key="c1" name="Active1">
+                   ${this.__tableConfig.map(i => this.renderDbFieldItem(i))}
+                </vv-tab-content>
+                <vv-tab-content key="c2" name="Active2">
+                    ${this._formControls.map(i => this.renderProperty(i) )}
+                </vv-tab-content>
+            </vv-tab>
+        </div>
+        `;
         }
+        renderFormControl(con){
+            // data.fields.map(field => {debugger
+            if(!this.__conIds.includes(con.id)){
+                this.__conIds.push(con.id);
+            }
 
-            if(con.type === 'button'){
-                return html`<vv-button>test</vv-button>`
-            }else if (con.type === 'input') {
-                return html`<div class="citem nested-1 col-sm-${con.size}">
-                <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
-                    <div class="col-sm-9"><vv-input name="${con.id}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-input></div>
-                    ${this.selectedId===con.id?html`<vv-icon name="close-circle-fill" color="#ed5565" class="elem-delete"></vv-icon>`:""}
-                </div>`
-            }else if (con.type === 'select') {
-                return html`<vv-select name="${con.id}" labelName="${con.labelName}" class="nested-1 col-sm-${con.size}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-select>`
-            }else if (con.type === 'table') {
-                let columns = JSON.stringify(con.columns);
-                let tableData = JSON.stringify([{'no':'456','name':'test02','age':18},{'no':'789','name':'test03','age':38}]);
-                return html`<vv-edit-table name="${con.id}" labelName="${con.labelName}" column="${columns}" data="${tableData}" class="nested-1 col-sm-12" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-edit-table>`
-            }else if (con.type === 'card') {
-                if (con.child) {
+                if(con.type === 'button'){
+                    return html`<vv-button>test</vv-button>`
+                }else if (con.type === 'input') {
+                    return html`<div class="citem nested-1 col-sm-${con.size}">
+                    <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
+                        <div class="col-sm-9"><vv-input name="${con.id}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-input></div>
+                        ${this.selectedId===con.id?html`<vv-icon name="close-circle-fill" color="#ed5565" class="elem-delete"></vv-icon>`:""}
+                    </div>`
+                }else if (con.type === 'select') {
+                    return html`<vv-select name="${con.id}" labelName="${con.labelName}" class="nested-1 col-sm-${con.size}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-select>`
+                }else if (con.type === 'table') {
+                    let column = JSON.stringify(con.column);
+                    let tableData = JSON.stringify([{'no':'456','name':'test02','age':18},{'no':'789','name':'test03','age':38}]);
+                    return html`<div class="citem nested-1" style="position:relative;">
+                    <vv-edit-table name="${con.id}" labelName="${con.labelName}" editable column="${column}" data="${tableData}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-edit-table>
+                        ${this.selectedId === con.id ? html`<vv-icon name="close-circle-fill" color="#ed5565" class="elem-delete" style="right:3px"></vv-icon>`:""}
+                    </div>`
+                }else if (con.type === 'card') {
+                    if (con.child) {
                     return html`<vv-card name="${con.id}" class="nested-1">${con.child.map(i => this.renderFormControl(i) )}</vv-card>`
                 }else{
                     return html`<vv-card name="${con.id}" class="nested-1"></vv-card>`
@@ -214,7 +217,11 @@ class PgFormDesign extends LitElement {
             if(key === "labelName"){
                 return html`<div class="form-group row"><label>标签名:</label><vv-input noLabel value="${con[key]}" @veinput="${(e)=>{this.propertyInputHandler('labelName',con,e)}}"></vv-input></div>`
             }else if(key === "size"){
-            return html`<div class="form-group row"><label>栅格格数:</label><vv-select noLabel @change="${(e)=>{this.propertyInputHandler('size',con,e)}}" value="${con[key]}"><vv-option value="2">2</vv-option><vv-option value="4">4</vv-option><vv-option value="6">6</vv-option><vv-option value="8">8</vv-option><vv-option value="12">12</vv-option></vv-select></div>`
+                return html`<div class="form-group row"><label>栅格格数:</label><vv-select noLabel @change="${(e)=>{this.propertyInputHandler('size',con,e)}}" value="${con[key]}"><vv-option value="2">2</vv-option><vv-option value="4">4</vv-option><vv-option value="6">6</vv-option><vv-option value="8">8</vv-option><vv-option value="12">12</vv-option></vv-select></div>`
+            }else if(key === "column"){debugger
+                return html`<div class="row mb-5">
+                    ${con["column"].map(i=> html`<a href="javascript:;" class="btn btn-sm font-weight-bolder btn-light-primary mb-2 mr-2">${i.labelName}</a>`)}
+                    </div>`
             }
         });
     }

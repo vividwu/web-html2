@@ -1,11 +1,13 @@
 import {LitElement, html, css} from '../lit-core.min.js';
 import { coreCss } from './vv-css.js';
-
+import { VvIcon } from './vv-icon.js';
 export class VvEditTable extends LitElement {
     static get properties() {
         return {  id: String,
             type: String,
             size: String,
+            labelName: String,
+            editable: { type: Boolean, reflect: true },
             column: { type: Array, reflect: true},  //[{title:'编号',key:'no',render:function(row){return html`<b>row.no+'.'</b>`;}}]
             data: { type: Array, reflect: true } };
     }
@@ -67,6 +69,9 @@ th {
 }
   a:not([href]):hover {
     text-decoration: none; }
+.card.card-custom > .card-body {
+    padding: 0rem 2.25rem;
+}
         `
         ]
     }
@@ -89,16 +94,22 @@ th {
         return html`<div class="card card-custom gutter-b">
 									<div class="card-header border-0 py-5">
 										<div class="card-title">
-										<h3 class="card-label">HTML Table</h3>
+										<h3 class="card-label">${this.labelName}</h3>
 										</div>
 										<div class="card-toolbar"><a @click="${this.addRowClick}" class="btn btn-primary font-weight-bolder">New Report</a></div>
 									</div>
 									<div class="card-body">
-										<table class="table table-head-custom table-vertical-center"><thead><tr class="text-left">
+										<table class="table table-head-custom table-vertical-center"><thead>
+										<tr class="text-left">
 ${this.column?this.column.map(i => html`<th>${i.labelName}</th>`):''}
-</tr></thead>
+${this.editable?html`<th>操作</th>`:''}
+</tr>
+</thead>
 <tbody>
-${this.data?this.data.map(d => html`<tr>${this.column?this.column.map(col => html`<td>${this.renderCellControl(col,d[col.id])}</td>`):''}</tr>`):''}
+${this.data?this.data.map((d,i) => html`<tr>
+    ${this.column?this.column.map(col => html`<td>${this.renderCellControl(col,d[col.id])}</td>`):''}
+    ${this.editable?html`<td><vv-icon @click="${()=>{this.delRowClick(i)}}" name="close-circle-fill" color="#ed5565"></vv-icon></td>`:''}
+</tr>`):''}
 </tbody></table>${this.data?'':html`<div style="text-align:center;padding-bottom:10px">暂无数据</div>`}
 </div>
 </div>`;
@@ -121,6 +132,10 @@ ${this.data?this.data.map(d => html`<tr>${this.column?this.column.map(col => htm
             newRow[d.id] = "";
         });
         this.data.push(newRow);
+        this.requestUpdate();
+    }
+    delRowClick(i){
+        this.data.splice(i,1);
         this.requestUpdate();
     }
     renderCellControl(columnConfig,data){
