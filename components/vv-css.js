@@ -73,9 +73,6 @@ body {
  .font-weight-bolder {
     font-weight: 600 !important;
 }     
-    .mr-2, .mx-2 {
-        margin-right: 0.5rem !important;
-    }
     button, select {
         text-transform: none;
     }
@@ -88,6 +85,10 @@ body {
         font-size: inherit;
         line-height: inherit;
     }
+svg {
+    overflow: hidden;
+    vertical-align: middle;
+}
     button {
         appearance: auto;
         writing-mode: horizontal-tb !important;
@@ -196,19 +197,15 @@ a:not([href]):not([class]) {
   background-color: #F3F6F9;
   border-color: #F3F6F9; }
   
-  .btn.btn-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  height: calc(1.5em + 1.3rem + 2px);
-  width: calc(1.5em + 1.3rem + 2px); }
-  .btn.btn-icon.btn-xs {
-    height: 24px;
-    width: 24px; }
   .btn.btn-icon.btn-sm, .btn-group-sm > .btn.btn-icon {
     height: calc(1.35em + 1.1rem + 2px);
     width: calc(1.35em + 1.1rem + 2px); }
+.btn-sm, .btn-group-sm > .btn {
+    padding: 0.55rem 0.75rem;
+    font-size: 0.925rem;
+    line-height: 1.35;
+    border-radius: 0.42rem;
+}
       .btn {
   outline: none !important;
   vertical-align: middle;
@@ -310,7 +307,38 @@ a:not([href]):not([class]) {
   fill: #FFFFFF; }
 .btn.btn-primary.disabled .svg-icon svg:hover g [fill], .btn.btn-primary:disabled .svg-icon svg:hover g [fill] {
       transition: fill 0.3s ease; }
-      
+.btn.btn-light .svg-icon svg g [fill] {
+    transition: fill 0.3s ease;
+    fill: #7E8299;
+}
+.btn.btn-icon .svg-icon {
+    margin: 0;
+    padding: 0;
+}
+.svg-icon.svg-icon-primary svg g [fill] {
+    transition: fill 0.3s ease;
+    fill: #3699FF !important;
+}
+.svg-icon.svg-icon-md svg {
+    height: 1.5rem !important;
+    width: 1.5rem !important;
+}
+.svg-icon.svg-icon-primary svg g [fill] {
+  transition: fill 0.3s ease;
+  fill: #3699FF !important; }
+
+.svg-icon.svg-icon-primary svg:hover g [fill] {
+  transition: fill 0.3s ease; }
+.btn.btn-hover-primary:hover:not(.btn-text):not(:disabled):not(.disabled), .btn.btn-hover-primary:focus:not(.btn-text), .btn.btn-hover-primary.focus:not(.btn-text) {
+  color: #FFFFFF !important;
+  background-color: #3699FF !important;
+  border-color: #3699FF !important; }
+.btn.btn-hover-primary:hover:not(.btn-text):not(:disabled):not(.disabled) .svg-icon svg g [fill], .btn.btn-hover-primary:focus:not(.btn-text) .svg-icon svg g [fill], .btn.btn-hover-primary.focus:not(.btn-text) .svg-icon svg g [fill] {
+  transition: fill 0.3s ease;
+  fill: #FFFFFF !important; }
+.btn.btn-hover-primary:hover:not(.btn-text):not(:disabled):not(.disabled) .svg-icon svg:hover g [fill], .btn.btn-hover-primary:focus:not(.btn-text) .svg-icon svg:hover g [fill], .btn.btn-hover-primary.focus:not(.btn-text) .svg-icon svg:hover g [fill] {
+  transition: fill 0.3s ease; }
+
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col,
 .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
 .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
@@ -502,6 +530,12 @@ a:not([href]):not([class]) {
 }
 .pt-2, .py-2 {
     padding-top: 0.5rem !important;
+}
+.ml-3, .mx-3 {
+    margin-left: 0.75rem !important;
+}
+.mr-3, .mx-3 {
+    margin-right: 0.75rem !important;
 }
 .pl-4, .px-4 {
     padding-left: 1rem !important;
