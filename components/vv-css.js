@@ -531,6 +531,12 @@ a:not([href]):not([class]) {
 .pt-2, .py-2 {
     padding-top: 0.5rem !important;
 }
+.pb-3, .py-3 {
+    padding-bottom: 0.75rem !important;
+}
+.pt-3, .py-3 {
+    padding-top: 0.75rem !important;
+}
 .ml-3, .mx-3 {
     margin-left: 0.75rem !important;
 }
