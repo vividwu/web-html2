@@ -3,6 +3,7 @@ import { VvCard } from '../components/vv-card.js';
 import { VvDialog } from '../components/vv-dialog.js';
 import { VvButton } from '../components/vv-button.js';
 import { VvInput } from '../components/vv-input.js';
+import { VvTreeview } from '../components/vv-treeview.js';
 class PgHome extends LitElement {
     constructor() {
         super();
@@ -18,7 +19,9 @@ class PgHome extends LitElement {
       <h2>Home</h2><vv-card><span>aaaa</span><vv-button @click="${this.openDialogClick}">弹出</vv-button>
       <vv-dialog title="编辑内容" id="myDialog">
       <vv-input></vv-input>
-      <div slot="footer"><vv-button>close</vv-button></div></vv-dialog></vv-card>
+      <div slot="footer"><vv-button>close</vv-button></div></vv-dialog>
+      <div><vv-treeview></vv-treeview></div>
+      </vv-card>
     `;
     }
     openDialogClick(){
