@@ -55,7 +55,7 @@ const routes = [{
 						path: 'dept-user',
 						component: 'pg-dept-user',
 						action: async () => {
-							await import('./org/pg-dept-user.js');
+							await import('./org/pg-dept-user.js?id=123');
 						},
 					},]
 

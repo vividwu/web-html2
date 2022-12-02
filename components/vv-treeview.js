@@ -15,11 +15,15 @@ export class VvTreeview extends LitElement {
             coreCss,
             css`
 .jstree-node, .jstree-children, .jstree-container-ul {
-    display: block;
+    /*display: block;*/
     margin: 0;
     padding: 0;
     list-style-type: none;
     list-style-image: none;
+    
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.5s ease-in-out;
 }
 
 .jstree-icon:empty {
@@ -88,6 +92,9 @@ export class VvTreeview extends LitElement {
 }
 .jstree-anchor > .jstree-themeicon {
     margin-right: 2px;
+    line-height: 24px;
+    width: 16px;
+    height: 24px;   
 }
 .jstree-leaf > .jstree-ocl {
     background-position: -68px -4px;
@@ -123,16 +130,99 @@ export class VvTreeview extends LitElement {
   background: #3699FF !important;
   border-radius: 3px;
 }
+.child-close {
+    opacity: 0;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition: all 0.5s ease-in-out;
+}
         `
         ]
     }
     constructor() {
         super();
         this.type = "treeview";
-        this.show = false
+        this.show = false,
+        this._data = [{
+            id:'1',
+            label: '一级 1',
+            children: [{
+                id:'11',
+                label: '二级 1-1'
+            },{
+                id:'12',
+                label: '二级 1-2',
+                children: [{
+                    id:'121',
+                    label: '三级 1-2-1',
+                    children: [{
+                        id:'1211',
+                        label: '四级 1-2-1-1'
+                    }]
+                }]
+            },{
+                id:'13',
+                label: '二级 1-3'
+            }]
+        }]
+    }
+    renderChildren(node){
+        if(node.children){
+            return html`<li role="none" id="${node.id}" class="jstree-node">
+<i class="jstree-icon jstree-ocl" role="presentation"></i>
+<a class="jstree-anchor" href="javascript:;" aria-level="1" id="${node.id}_anchor">
+    <i class="jstree-icon jstree-themeicon vv-icon-wrapper jstree-icon-close" @click="${(e)=>this.iconClick(e,node.id)}" role="presentation">
+        <svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
+    </i>
+    <span @click="${(e)=>this.lableClick(e,node.id)}">${node.label}</span>
+</a>
+<ul class="jstree-children child-close">${node.children.map(i=> this.renderChildren(i) )}</ul>
+</li>`;
+        }else{
+            return this.renderNode(node);
+        }
+    }
+    renderNode(node){
+        return html`<li role="none" id="${node.id}" class="jstree-node">
+    <i class="jstree-icon jstree-ocl" role="presentation"></i>
+    <a class="jstree-anchor" href="javascript:;" aria-level="1" id="${node.id}_anchor">
+            <i class="jstree-icon jstree-ocl" role="presentation"></i>
+            <span @click="${(e)=>this.lableClick(e,node.id)}">${node.label}</span>
+    </a>
+</li>`
+    }
+    iconClick(e,id){debugger
+        let child = this.renderRoot.getElementById(id+"_anchor").nextElementSibling; //e.target.parentElement.nextElementSibling;
+        console.log("next",child);
+        // if(child == null){
+        //     console.log("no children node");
+        //     return;
+        // }
+        if(child.nodeName == "UL"){
+            child.classList.toggle("child-close");
+        }
+    }
+    lableClick(e,id){debugger
+        const anchors = this.renderRoot.querySelectorAll(".jstree-anchor");
+        anchors.forEach((anchor)=>{ anchor.classList.remove("jstree-clicked") });
+        this.renderRoot.getElementById(id+"_anchor").classList.toggle("jstree-clicked");
+        if(e.srcElement.tagName == 'SPAN') {
+            let event = new CustomEvent('label-click', {
+                detail: {
+                    id: id,
+                    label: e.target.innerText
+                }
+            });
+            this.dispatchEvent(event);
+        }
     }
     render(){debugger
         return html`<ul class="jstree-container-ul jstree-children">
+${this._data.map(i=>this.renderChildren(i))}
+</ul>`
+        /*return html`<ul class="jstree-container-ul jstree-children">
     <li role="none" id="j1_1" class="jstree-node">
         <i class="jstree-icon jstree-ocl" role="presentation"></i>
         <a class="jstree-anchor" href="#" aria-level="1" id="j1_1_anchor">
@@ -194,7 +284,7 @@ export class VvTreeview extends LitElement {
             Clickable link node
         </a>
     </li>
-</ul>`;
+</ul>`;*/
     }
 
     connectedCallback() {debugger

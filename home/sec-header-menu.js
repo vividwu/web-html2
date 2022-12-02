@@ -5,7 +5,7 @@ export class SecHeaderMenu extends LitElement {
         return {  id: String,
             menuRoot:String,
             menuSub1:String,
-            show:  { type: Boolean }
+                show:  { type: Boolean }
         };
     }
     static get styles() {
@@ -410,11 +410,11 @@ i {
     connectedCallback() {
         super.connectedCallback();debugger
         // this._target ??= this.previousElementSibling;
-        document.addEventListener('mousedown',this.setpop);
+        //document.addEventListener('mousedown',this.setpop);
     }
-    setpop = (ev) => {
+    setpop = (ev) => {debugger
         const path = ev.path || (ev.composedPath && ev.composedPath());//debugger
-        if(!path.includes(this) && ev.which == '1' && !path.includes(ev.path.includes(this.renderRoot.getElementById("secHeaderMenu").children[0]))){
+        if(this.menuRoot && !path.includes(this) && ev.which == '1' && !path.includes(ev.path.includes(this.renderRoot.getElementById("secHeaderMenu").children[0]))){
             this.menuSub1 = "";
             this.menuRoot = "";
         }
