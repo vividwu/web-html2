@@ -89,17 +89,30 @@ class PgFormDesign extends LitElement {
     constructor() {
         super();
         //请求
-        TestApi().then(res => console.log('webapi',res) )
+        TestApi().then(res => {
+            console.log('webapi',res);
+            this._formControls = [];
+            this.requestUpdate();
+        })
         //{"success":true,"message":null,"data":[{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"费用发生部门","value":"occurs_dept_code","required":"y"},{"label":"合计费用","value":"amount","required":"y"},{"label":"报销原因","value":"reason","required":"n"}],"label":"费用报销单主表","value":"fm_fybx_info"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"费用项","value":"item_code","required":"n"},{"label":"发生日期","value":"occurs_time","required":"n"},{"label":"费用项金额","value":"qty","required":"y"}],"label":"费用报销单明细表","value":"fm_fybx_detail"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"经理意见","value":"fm_jingli_yijian","required":"n"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"}],"label":"","value":"fm_test"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"经理意见","value":"fm_jingli_yijian","required":"n"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"}],"label":"1","value":"fm_qingjia"}],"errCode":null,"ext":null};
         this.__tableConfig = [{
             "table": "bx_info",
             "name":"报销主表",
-            "fields": [{"title": "申请单编号", "name": "order_no", "control": "input"}, {
-                "title": "申请人ID",
-                "name": "emp_id",
-                "control": "input"
-            }]
-        }];
+            "category":"main",
+            "fields": [{"title": "申请单编号", "name": "order_no", "control": "input"},
+                {"title": "申请人ID","name": "emp_id","control": "input"},
+                {"title": "所在部门编码","name": "dept_code","control": "select"},
+                {"title": "合计费用","name": "amount","control": "input"}]
+        }
+        ,{
+            "table": "bx_detail",
+            "name":"报销明细",
+            "category":"detail",
+            "fields": [{"title": "申请单编号", "name": "order_no", "control": "input"},
+                {"title": "费用项金额","name": "qty","control": "input"},
+                {"title": "费用发生时间","name": "occurs_time","control": "date"}]
+          }
+        ];
         this._formData = {};  //{"b$c":{"title": "编号","control":"input"},...}
         let that = this;
         this.__tableConfig.map(i=>{
@@ -110,12 +123,16 @@ class PgFormDesign extends LitElement {
         });
         this.__conIds = [];
         //
-        this._formControls = [
-            {"id":"g1","type":"card","child":[{"id":"v1","type":"input","labelName":"bianhao","size":12},{"id":"v4","type":"select","labelName":"gangwei","size":12}]},
+        this._formControls = [];/*[
+            {"id":"g1","type":"card","child":[
+                {"id":"v1","type":"input","labelName":"bianhao","size":12},
+                    {"id":"v4","type":"select","labelName":"gangwei","size":12}
+                    ]},
             {"id":"v2","type":"input","labelName":"renyuan","size":12},
                 {"id":"Table_1644202096899","type":"table","labelName":"明细表","column":[{"type":"input","labelName":"编号","id":"no"},
                         {"type":"input","labelName":"姓名","id":"name"}]},
-                {"id":"g3","type":"card","child":[{"id":"v3","type":"input","labelName":"bumen","size":12}]}]
+                {"id":"g3","type":"card","child":[
+                    {"id":"v3","type":"input","labelName":"bumen","size":12}]}]*/
             // let vc = new VvCard();
             // vc.id = "g1";
             // let vi = new VvInput();
@@ -245,34 +262,24 @@ class PgFormDesign extends LitElement {
             //
             // onMove:onMoveEvent
         });
-        var g1 = this.shadowRoot.querySelector('[name="g1"]');
-        Sortable.create(g1, {
-            group: 'nested',
-            draggable: '.nested-1',
-            dataIdAttr: 'data-g1',
-            animation: 150
-            // ,onEnd:onEndEvent,
-            // onMove:onMoveEvent,
-            // onAdd:onAddEvent,
-            // onUpdate:onUpdateEvent,
-            // onRemove:onRemoveEvent,
-            //
-            // onMove:onMoveEvent
-        });
-
-        var g2 = this.shadowRoot.querySelector('[name="g2"]');
-        Sortable.create(g2, {
-            group: 'nested',
-            draggable: '.nested-1',
-            dataIdAttr: 'data-g2',
-            animation: 150
-            // ,onEnd:onEndEvent,
-            // onMove:onMoveEvent,
-            // onAdd:onAddEvent,
-            // onUpdate:onUpdateEvent,
-            // onRemove:onRemoveEvent,
-            //
-            // onMove:onMoveEvent
+        this._formControls.map(c=>{
+            if(c.type=="card")
+            {
+                var card = this.shadowRoot.querySelector('[name="'+c.id+'"]');
+                Sortable.create(card, {
+                    group: 'nested',
+                    draggable: '.nested-1',
+                    dataIdAttr: c.id,
+                    animation: 150
+                    // ,onEnd:onEndEvent,
+                    // onMove:onMoveEvent,
+                    // onAdd:onAddEvent,
+                    // onUpdate:onUpdateEvent,
+                    // onRemove:onRemoveEvent,
+                    //
+                    // onMove:onMoveEvent
+                });
+            }
         });
     }
     fieldClickHandler(table,field,e){debugger
