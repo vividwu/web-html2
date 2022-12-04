@@ -10,7 +10,7 @@ static get properties() {
             labelName: String,
             placeholder: String,
             muted: String,
-            noLabel:  { type: Boolean, reflect: true },  /*设置完只写属性Key也可以*/
+            disabled:  { type: Boolean, reflect: true },  /*设置完只写属性Key也可以*/
 	        myArray: Array };
 }
     static get styles() {
@@ -33,7 +33,7 @@ constructor() {
     this.labelName = "Full Name:"
     this.placeholder = "Full name"
     this.muted = "Please enter your full name"
-    this.noLabel = false,
+    this.disabled = false,
     this._value = "";
     this.addEventListener('input', this.inputHandler);
 }
@@ -44,7 +44,7 @@ constructor() {
         this._value = value;
     }
   render(){console.log(this.noLabel);
-    return html`<input id="input" type="email" class="form-control form-control-sm" placeholder="${this.placeholder}" value="${this._value}"/>`;
+    return html`<input id="input" type="email" class="form-control form-control-sm" placeholder="${this.placeholder}" ${this.disabled?"disabled":""} value="${this._value}"/>`;
   }
   withLabel(){
     return html`<label class="col-sm-3 col-form-label text-sm-right">${this.labelName}</label><div class="col-sm-9">

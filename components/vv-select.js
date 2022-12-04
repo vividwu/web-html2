@@ -513,10 +513,7 @@ select.selectpicker {
     set value(value) {
         this._value = value;
     }
-    render() {console.log('select render', this.open);
-        return html`${this.noLabel?this.withOutLabel():html`<label class="col-form-label text-right col-sm-3">${this.labelName}</label><div class="col-sm-9">${this.withOutLabel()}</div>`}`;
-    }
-    withOutLabel() {
+    render() {
         return html`<div id="vvSelect" style="position: relative;width: 100%;" class="dropdown bootstrap-select form-control form-control-sm dropup ${this.open ? 'show' : ''}">
 							<button type="button" tabindex="-1" @click="${this.clickHandler}" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" title="${this.text}" selected-value="${this.value}">
 							<div class="filter-option" style="width:100%;display: flex;">

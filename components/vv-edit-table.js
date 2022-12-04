@@ -143,6 +143,8 @@ ${this.data?this.data.map((d,i) => html`<tr>
             return html`<vv-input name="${columnConfig.id}" value="${data}"></vv-input>`
         }else if(columnConfig.type == "select"){
             return html`<vv-select name="${columnConfig.id}"></vv-select>`
+        }else if(columnConfig.type == "date"){
+            return html`<vv-date name="${columnConfig.id}"></vv-date>`
         }
     }
 }
