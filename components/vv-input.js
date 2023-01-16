@@ -21,6 +21,14 @@ static get properties() {
             display: flex;
     max-width: 100%;
     flex: 0 0 100%;}
+    :host([disabled]){ 
+        opacity:.8;
+        cursor:not-allowed; 
+    }
+    :host([disabled]) input{
+            pointer-events:none;
+            background:rgba(0,0,0,.1);
+        }
         `
         ]
     }
@@ -43,8 +51,8 @@ constructor() {
     set value(value) {
         this._value = value;
     }
-  render(){console.log(this.noLabel);
-    return html`<input id="input" type="email" class="form-control form-control-sm" placeholder="${this.placeholder}" ${this.disabled?"disabled":""} value="${this._value}"/>`;
+  render(){
+    return html`<input id="input" type="email" class="form-control form-control-sm" placeholder="${this.placeholder}" value="${this._value}"/>`;
   }
   withLabel(){
     return html`<label class="col-sm-3 col-form-label text-sm-right">${this.labelName}</label><div class="col-sm-9">

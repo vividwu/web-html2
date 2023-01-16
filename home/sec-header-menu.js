@@ -71,7 +71,6 @@ export class SecHeaderMenu extends LitElement {
     vertical-align: middle;
     align-items: stretch;
     outline: none !important;
-    text-decoration: none;
     cursor: pointer;
 }
 a, button {

@@ -217,7 +217,7 @@ class PgFormDesign extends LitElement {
                 }else if (con.type === 'select') {
                     return html`<div id="${con.id}" class="citem nested-1 col-sm-${con.size}">
                     <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
-                        <vv-select id="${con.id}" name="${con.id}" labelName="${con.labelName}" class="nested-1 col-sm-${con.size}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-select>
+                        <div class="col-sm-9"><vv-select id="${con.id}" name="${con.id}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-select></div>
                     </div>`
                 }else if (con.type === 'date') {
                     return html`<vv-date id="${con.id}" name="${con.id}" labelName="${con.labelName}" class="nested-1 col-sm-${con.size}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-date>`

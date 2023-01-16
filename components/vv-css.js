@@ -72,7 +72,17 @@ body {
       font-size: calc(1.26rem + 0.12vw) ; }
  .font-weight-bolder {
     font-weight: 600 !important;
-}     
+}
+.font-size-sm {
+    font-size: 0.925rem;
+}
+
+.text-primary {
+    color: #3699FF !important;
+}
+.text-uppercase {
+    text-transform: uppercase !important;
+}  
     button, select {
         text-transform: none;
     }
@@ -153,9 +163,9 @@ select {
   color: #3699FF;
   text-decoration: none;
   background-color: transparent; }
-  a:hover {
+  /*a:hover {
     color: #0073e9;
-    text-decoration: underline; }
+    text-decoration: underline; }*/
     a {
   transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
   a:hover {
@@ -338,7 +348,17 @@ a:not([href]):not([class]) {
   fill: #FFFFFF !important; }
 .btn.btn-hover-primary:hover:not(.btn-text):not(:disabled):not(.disabled) .svg-icon svg:hover g [fill], .btn.btn-hover-primary:focus:not(.btn-text) .svg-icon svg:hover g [fill], .btn.btn-hover-primary.focus:not(.btn-text) .svg-icon svg:hover g [fill] {
   transition: fill 0.3s ease; }
-
+.vv-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
+    font-style: normal;
+    line-height: 0;
+    text-align: center;
+    text-transform: none;
+    text-rendering: optimizelegibility;
+    -webkit-font-smoothing: antialiased;
+}
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col,
 .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
 .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
@@ -434,7 +454,7 @@ a:not([href]):not([class]) {
   flex-wrap: wrap;
   margin-right: -12.5px;
   margin-left: -12.5px; }
-  
+.row{ flex: 0 0 100%; }  
 .col-12 {
   flex: 0 0 100%;
   max-width: 100%; }
@@ -519,6 +539,9 @@ a:not([href]):not([class]) {
 .ml-2, .mx-2 {
     margin-left: 0.5rem !important;
 }
+.pb-1, .py-1 {
+    padding-bottom: 0.25rem !important;
+}
 .mr-2,
 .mx-2 {
   margin-right: 0.5rem !important; }
@@ -542,6 +565,10 @@ a:not([href]):not([class]) {
 }
 .mr-3, .mx-3 {
     margin-right: 0.75rem !important;
+}
+.px-3 {
+    padding-right: 0.75rem !important;
+    padding-left: 0.75rem !important;
 }
 .pl-4, .px-4 {
     padding-left: 1rem !important;

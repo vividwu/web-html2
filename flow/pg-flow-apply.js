@@ -90,10 +90,15 @@ class PgFlowApply extends LitElement {
         //请求
         TestApi().then(res => {
             console.log('webapi',res) ;
-            this._formControls = [
-                {"id":"g1","type":"card","child":[{"id":"bx_info$bill_code","type":"cc-orderinfo","labelName":"单据编号","size":12},{"id":"v1","type":"input","labelName":"bianhao","size":12},{"id":"v4","type":"select","labelName":"gangwei","size":12}]},
-                {"id":"v2","type":"input","labelName":"renyuan","size":12},
-                {"id":"g3","type":"card","child":[{"id":"v3","type":"input","labelName":"bumen","size":12}]}];
+            this._formControls = [{id: 'CardDefault', type: 'card', child:[{id: 'bx_info$order_no', type: 'input', labelName: '申请编号', size: '4'}
+                ,{id: 'bx_info$emp_id', type: 'input', labelName: '申请人ID', size: '4'}
+    ,{id: 'bx_info$amount', type: 'input', labelName: '合计费用', size: '4'}
+    ,{id: 'bx_info$dept_code', type: 'select', labelName: '所在部门', size: '4'}]}
+    ,{id: 'bx_detail', type: 'table', labelName: '报销明细', column:[
+        {type: 'input', labelName: '申请单编号', id: 'bx_detailorder_no'}
+        ,{type: 'input', labelName: '费用项金额', id: 'bx_detailqty'}
+        ,{type: 'date', labelName: '费用发生时间', id: 'bx_detailoccurs_time'}]}];
+
             this.requestUpdate();
         });
         //{"success":true,"message":null,"data":[{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"费用发生部门","value":"occurs_dept_code","required":"y"},{"label":"合计费用","value":"amount","required":"y"},{"label":"报销原因","value":"reason","required":"n"}],"label":"费用报销单主表","value":"fm_fybx_info"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"费用项","value":"item_code","required":"n"},{"label":"发生日期","value":"occurs_time","required":"n"},{"label":"费用项金额","value":"qty","required":"y"}],"label":"费用报销单明细表","value":"fm_fybx_detail"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"经理意见","value":"fm_jingli_yijian","required":"n"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"}],"label":"","value":"fm_test"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"经理意见","value":"fm_jingli_yijian","required":"n"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"}],"label":"1","value":"fm_qingjia"}],"errCode":null,"ext":null};
@@ -154,9 +159,6 @@ class PgFlowApply extends LitElement {
             </div>
         </div>
     </div>
-	<div class="page-side property panel panel-custom panel-white panel-shadow gutter-b">
-
-    </div>
     `;
     }
     renderFormControl(con){
@@ -170,27 +172,30 @@ class PgFlowApply extends LitElement {
         }else if (con.type === 'input') {
             return html`<div class="citem col-sm-${con.size}">
                 <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
-                    <div class="col-sm-9"><vv-input name="${con.id}"></vv-input></div>
+                    <div class="col-sm-9"><vv-input id="${con.id}" name="${con.id}"></vv-input></div>
                 </div>`
         }else if (con.type === 'cc-orderinfo') {
             return html`<div class="citem col-sm-${con.size}">
                 <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
-                    <div class="col-sm-9"><cc-order-info name="${con.id}" formType="apply" flowCode="bx2"></cc-order-info></div>
+                    <div class="col-sm-9"><cc-order-info id="${con.id}" name="${con.id}" formType="apply" flowCode="bx2"></cc-order-info></div>
                 </div>`
         }else if (con.type === 'select') {
-            return html`<vv-select name="${con.id}" labelName="${con.labelName}" class="nested-1 col-sm-${con.size}"></vv-select>`
+            return html`<div class="citem col-sm-${con.size}">
+                    <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
+                        <div class="col-sm-9"><vv-select id="${con.id}" name="${con.id}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-select></div>
+                    </div>`
         }else if (con.type === 'card') {
             if (con.child) {
-                return html`<vv-card name="${con.id}" class="nested-1">${con.child.map(i => this.renderFormControl(i) )}</vv-card>`
+                return html`<vv-card name="${con.id}">${con.child.map(i => this.renderFormControl(i) )}</vv-card>`
             }else{
-                return html`<vv-card name="${con.id}" class="nested-1"></vv-card>`
+                return html`<vv-card name="${con.id}"></vv-card>`
             }
         }
         // });
     }
 
-    getFormData(){
-        console.log(this._formControls,this.__conIds)
+    getFormData(){debugger
+        console.log(this._formControls,this.renderRoot.getElementById("bx_info$emp_id").value)
     }
     firstUpdated(changedProperties) {debugger
 

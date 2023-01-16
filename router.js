@@ -4,6 +4,13 @@ const routes = [{
 		path: '/form-design',
 		component: 'pg-form-design'
 	},
+	{
+		path: '/flow-design',
+		component: 'pg-flow-design',
+		action: async () => {
+			await import('./home/pg-flow-design.js');
+		},
+	},
    {
     	path: '/',
     	component: 'pg-index',
@@ -57,8 +64,14 @@ const routes = [{
 						action: async () => {
 							await import('./org/pg-dept-user.js');
 						},
+					},
+					{
+						path: 'send-mail',
+							component: 'pg-send-mail',
+						action: async () => {
+							await import('./org/pg-send-mail.js');
+						},
 					},]
-
 		  },
 		 {
 				path: 'home',
