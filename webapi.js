@@ -1,7 +1,7 @@
 import request from './request.js'
 
 
-export const TestApi = () => request.get(`/api/config/process/form/fields_tree?pname=fybx2&code=fybxApply`);
+export const TestApi = () => request.get(`http://10.1.8.109:8899/test/getNodeInfo/Mail/3/Mail1`);// /api/config/process/form/fields_tree?pname=fybx2&code=fybxApply
 
 export const CCGetApi = (url) => request.get(url);
 
