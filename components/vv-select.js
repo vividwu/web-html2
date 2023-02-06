@@ -8,10 +8,9 @@ export class VvSelect extends LitElement {
     static get properties() {
         return {  id: String,
             type: String,
-            value: String,
+            // value: String,
             text: String,
             size: String,
-            labelName: String,
             placeholder: String,
             noLabel: { type: Boolean, reflect: true },  /*设置完只写属性Key也可以*/
             open: { type: Boolean, reflect: true },
@@ -499,10 +498,9 @@ select.selectpicker {
         super();
         this.type = "select";
         this._value = "";
-        this._text = "VvSelect text";
+        this._text = "";
         this.myArray=[1,2,3];
         this.size = "sm"
-        this.labelName = "Full Name:"
         this.placeholder = "Full name"
         this.noLabel = false,
         this.open = false
@@ -518,10 +516,10 @@ select.selectpicker {
 							<button type="button" tabindex="-1" @click="${this.clickHandler}" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" title="${this.text}" selected-value="${this.value}">
 							<div class="filter-option" style="width:100%;display: flex;">
 							
-							<vv-tag class="label-sm" style="display: inline-flex;align-items: center;" removable>tag1</vv-tag>
+							${this.multiple?html`<vv-tag class="label-sm" style="display:inline-flex;align-items:center;" removable>${this.text}</vv-tag>`:html`<span style="height:16px;display:inline-flex;align-items:center;">${this.text}</span>`}
 							
 							</div>
-							<vv-icon name="close-circle-fill" @click="${this.clickClearHandler}" style="display: inline-flex;align-items: center;width: 1.25em;font-size: inherit;border: none;background: none;padding: 0px;cursor: pointer;margin-right:8px"></vv-icon>
+							${this.removable?html`<vv-icon name="close-circle-fill" @click="${this.clickClearHandler}" style="display: inline-flex;align-items: center;width: 1.25em;font-size: inherit;border: none;background: none;padding: 0px;cursor: pointer;margin-right:8px"></vv-icon>`:''}
 							<svg class="arrow" viewBox="0 0 1024 1024"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3 0.1-12.7-6.4-12.7z"></path></svg>
 							</button>
 							<vv-popup2 @focus="${this.focusPopupHandler}" @blur="${this.blurPopupHandler}" @option-click="${this.optionClickHander}">
@@ -560,8 +558,8 @@ select.selectpicker {
         });
         this.dispatchEvent(event);
 
-        this._text = e.detail.text;
-        this._value = e.detail.value;
+        this.text = e.detail.text;
+        this.value = e.detail.value;
 
         if(!this.multiple) {
             this.renderRoot.querySelector("vv-popup2").show = false;

@@ -11,14 +11,16 @@ import { VvEditTable } from '../components/vv-edit-table.js'
 import {TestApi} from '../webapi.js';
 import '../jsplumb2.6.8.js';
 import { VvTagInput } from '../components/vv-tag-input.js?v=0.1'
-import { VvDialog } from '../components/vv-dialog.js'
+import { VvDialog } from '../components/vv-dialog.js?v=0.1'
 
 
 class PgFlowDesign extends LitElement {
     static get properties() {
         return {
             id: String,
-            selectedId: String
+            selectedId: String,
+            /*task script*/
+
         };
     }
     static get styles() {
@@ -284,6 +286,8 @@ class PgFlowDesign extends LitElement {
         this.__conIds = [];
         //
         this._flowElems = [];
+        /*task script*/
+        this._taskScriptList = [];
         }
         render(){console.log("pg-flow-design render2")
             return html`<div class="page-content gray-bg">
@@ -291,13 +295,16 @@ class PgFlowDesign extends LitElement {
             <div class="panel-text">page-top</div>
             <vv-button @click="${this.getFormData}">get data</vv-button>
             <vv-button @click="${this.saveFormData}">save data</vv-button>
+            <vv-button @click="${this.getControlData}">getControlData</vv-button>
             <vv-button @click="${this.addNode}">add node</vv-button>
             <vv-button @click="${this.addDecision}">add Decision</vv-button>
         </div>
     
             <div class="main-content">
                 <div class="row">
-                    <div class="col-lg-12"><vv-card><vv-tag-input @ve-click="${this.tiClickHandler}" value="abc.vsd"></vv-tag-input><div class="m-5" style="height:350px">
+                    <div class="col-lg-12"><vv-card><vv-tag-input id="taskScript" @ve-click="${this.tiClickHandler}"></vv-tag-input>
+                    <vv-select id="testSelect"><vv-option value="1">a</vv-option><vv-option value="2">b</vv-option></vv-select>
+                    <div class="m-5" style="height:350px">
                         ${this._flowElems.map(i => this.renderFlowElem(i) )}</div></vv-card>
                     </div>
                 </div>
@@ -322,13 +329,16 @@ class PgFlowDesign extends LitElement {
                 <vv-tab-content key="tc1" name="ActiveTc1">
                     <div class="form-group row"><label>步骤编号:</label><vv-input></vv-input></div>
                     <div class="form-group row">
-                    <div class="col-sm-4"><vv-select></vv-select></div><div class="col-sm-4"><vv-input></vv-input></div><div class="col-sm-4"><vv-button @click="${this.addNewTaskScriptNameHandle}">新增</vv-button></div>
+                    <div class="col-sm-4"><vv-select>${this._taskScriptList.map(i=>html`<vv-option value="${i.scriptName}">${i.remark}</vv-option>`)}</vv-select></div><div class="col-sm-4"><vv-input></vv-input></div><div class="col-sm-4"><vv-button @click="${this.addNewTaskScriptNameHandler}">新增</vv-button></div>
                     </div>
                 </vv-tab-content>
                 <vv-tab-content key="tc2" name="ActiveTc2">
                     <vv-input></vv-input>
                 </vv-tab-content>
             </vv-tab>
+    </vv-dialog>
+    <vv-dialog id="taskScNameDialog"><div class="form-group row"><div class="col-sm-4"><vv-input placeholder="唯一英文文件名"></vv-input></div><div class="col-sm-8"><vv-input placeholder="中文描述"></vv-input></div>
+    <div slot="footer"><vv-button @click="${this.saveNewTaskScriptNameHandler}">保存</vv-button></div>
     </vv-dialog>
         `;
         }
@@ -384,6 +394,10 @@ class PgFlowDesign extends LitElement {
 	           <div class="row mb-5">
 	             ${item.fields.map(i => html`<a href="javascript:;" @click="${(e)=>{this.fieldClickHandler(item.table,i,e)}}" class="btn btn-sm font-weight-bolder btn-light-${this.__conIds.indexOf(item.table+"$"+i.name)>-1?"gray":"primary"} mb-2 mr-2">${i.title}</a>`)}
                </div>`
+    }
+    getControlData(){
+        console.log("select text",this.renderRoot.getElementById("testSelect").text,"value",this.renderRoot.getElementById("testSelect").value);
+        this.renderRoot.getElementById("taskScript").value = "abcd.vds";
     }
     getFormData(){
         console.log(jsPlumb.getAllConnections(),this._flowElems,this.__conIds)
@@ -561,8 +575,13 @@ class PgFlowDesign extends LitElement {
         console.log("ve:",e);
         this.renderRoot.getElementById("taskScDialog").show = true;
     }
-    addNewTaskScriptNameHandle(){
-
+    addNewTaskScriptNameHandler(){
+        this.renderRoot.getElementById("taskScNameDialog").show = true;
+    }
+    saveNewTaskScriptNameHandler(){
+        this._taskScriptList.push({scriptName:"test1.vsd",remark:"候选人脚本1"});
+        this.renderRoot.getElementById("taskScNameDialog").show = false;
+        this.requestUpdate();
     }
     fieldClickHandler(table,field,e){debugger
         console.log("fieldClickHandler",field);

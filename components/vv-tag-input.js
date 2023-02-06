@@ -7,7 +7,6 @@ export class VvTagInput extends LitElement {
         return {  id: String,
             type: String,
             value: String,
-            text: String,
             size: String,
             placeholder: String,
             open: { type: Boolean, reflect: true },
@@ -355,18 +354,18 @@ select.selectpicker {
         this.placeholder = "Full name"
         this.open = false
     }
-    get value() {
-        return this._value;
-    }
-    set value(value) {
-        this._value = value;
-    }
-    render() {
+    // get value() {
+    //     return this._value;
+    // }
+    // set value(value) {
+    //     this._value = value;
+    // }
+    render() {debugger
         return html`<div id="vvTagInput" style="position: relative;width: 100%;" class="dropdown bootstrap-select form-control form-control-sm">
 							<button type="button" tabindex="-1" @click="${this.clickHandler}" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" title="${this.text}" selected-value="${this.value}">
 							<div class="filter-option" style="width:100%;display: flex;">
 							
-							${this._value?html`<vv-tag class="label-sm" style="display:inline-flex;align-items:center;" removable>${this._value}</vv-tag>`:html`<span style="height:16px;display:inline-flex;align-items:center;"></span>`}
+							${this.value?html`<vv-tag class="label-sm" style="display:inline-flex;align-items:center;" removable>${this.value}</vv-tag>`:html`<span style="height:16px;display:inline-flex;align-items:center;"></span>`}
 							
 							</div>
 							</button>
@@ -399,21 +398,6 @@ select.selectpicker {
     }
     focusPopupHandler(e) {debugger
         console.log('popup focus', e.target);
-    }
-    optionClickHander(e){debugger
-        console.log('select fire popup click event:',e);
-        let event = new CustomEvent('change', {
-            detail: {
-                value: e.detail.value
-            }
-        });
-        this.dispatchEvent(event);
-        
-        this._value = e.detail.value;
-
-        if(!this.multiple) {
-            this.renderRoot.querySelector("vv-popup2").show = false;
-        }
     }
     connectedCallback() {
         super.connectedCallback();

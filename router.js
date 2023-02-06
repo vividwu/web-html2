@@ -11,8 +11,15 @@ const routes = [{
 			await import('./home/pg-flow-design.js');
 		},
 	},
+	{
+		path: '/login',
+		component: 'pg-login',
+		action: async () => {
+			await import('./home/pg-login.js');
+		},
+	},
    {
-    	path: '/',
+    	path: '/',  /*need login*/
     	component: 'pg-index',
     	children: [{
 			path: '',
