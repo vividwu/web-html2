@@ -8,11 +8,15 @@ import { VvTabContent } from '../components/vv-tab-content.js';
 import { VvSelect } from '../components/vv-select.js';
 import {VvIcon } from '../components/vv-icon.js'
 import { VvEditTable } from '../components/vv-edit-table.js'
-import {TestApi} from '../webapi.js';
+import {TestApi,FlowDesignTaskScriptListApi,FlowDesignTaskScriptContentApi} from '../webapi.js';
 import '../jsplumb2.6.8.js';
 import { VvTagInput } from '../components/vv-tag-input.js?v=0.1'
 import { VvDialog } from '../components/vv-dialog.js?v=0.1'
-
+import '../components/codemirror/lib/codemirror.js'
+import { editorCss } from  '../components/codemirror-css.js'
+import '../components/codemirror/mode/vivid/vivid.js'
+import '../components/codemirror/addon/hint/show-hint.js'
+import '../components/codemirror/addon/edit/matchbrackets.js'
 
 class PgFlowDesign extends LitElement {
     static get properties() {
@@ -25,7 +29,7 @@ class PgFlowDesign extends LitElement {
     }
     static get styles() {
         return [
-            coreCss,
+            coreCss,editorCss,
             css`
 :host {
   display: flex;
@@ -288,6 +292,8 @@ class PgFlowDesign extends LitElement {
         this._flowElems = [];
         /*task script*/
         this._taskScriptList = [];
+        //
+        this._editorDecision;
         }
         render(){console.log("pg-flow-design render2")
             return html`<div class="page-content gray-bg">
@@ -329,7 +335,16 @@ class PgFlowDesign extends LitElement {
                 <vv-tab-content key="tc1" name="ActiveTc1">
                     <div class="form-group row"><label>步骤编号:</label><vv-input></vv-input></div>
                     <div class="form-group row">
-                    <div class="col-sm-4"><vv-select>${this._taskScriptList.map(i=>html`<vv-option value="${i.scriptName}">${i.remark}</vv-option>`)}</vv-select></div><div class="col-sm-4"><vv-input></vv-input></div><div class="col-sm-4"><vv-button @click="${this.addNewTaskScriptNameHandler}">新增</vv-button></div>
+                    <div class="col-sm-4">
+                        <vv-select @change="${this.taskScriptChangeHandler}">${this._taskScriptList.map(i=>html`<vv-option value="${i.scriptName}">${i.remark}</vv-option>`)}</vv-select>
+                    </div>
+                    <div class="col-sm-4"><vv-input></vv-input></div>
+                    <div class="col-sm-4">
+                        <vv-button @click="${this.addNewTaskScriptNameHandler}">新增</vv-button>
+                    </div>
+                    </div>
+                    <div class="form-group row"><div class="col-sm-12">
+                        <textarea id="decitionScriptCode" class="form-control"></textarea></div>
                     </div>
                 </vv-tab-content>
                 <vv-tab-content key="tc2" name="ActiveTc2">
@@ -337,8 +352,12 @@ class PgFlowDesign extends LitElement {
                 </vv-tab-content>
             </vv-tab>
     </vv-dialog>
-    <vv-dialog id="taskScNameDialog"><div class="form-group row"><div class="col-sm-4"><vv-input placeholder="唯一英文文件名"></vv-input></div><div class="col-sm-8"><vv-input placeholder="中文描述"></vv-input></div>
-    <div slot="footer"><vv-button @click="${this.saveNewTaskScriptNameHandler}">保存</vv-button></div>
+    <vv-dialog id="taskScNameDialog">
+        <div class="form-group row">
+            <div class="col-sm-4"><vv-input placeholder="唯一英文文件名"></vv-input></div>
+            <div class="col-sm-8"><vv-input placeholder="中文描述"></vv-input></div>
+        </div>
+        <div slot="footer"><vv-button @click="${this.saveNewTaskScriptNameHandler}">保存</vv-button></div>
     </vv-dialog>
         `;
         }
@@ -572,8 +591,13 @@ class PgFlowDesign extends LitElement {
         this.addEndpointSharp(newNode);
     }
     tiClickHandler(e){
-        console.log("ve:",e);
+        console.log("ve:",e);debugger
         this.renderRoot.getElementById("taskScDialog").show = true;
+        FlowDesignTaskScriptListApi({processName:"fybx2"}).then(res => {
+            console.log('task script list',res);
+            this._taskScriptList = res.data;
+            this.requestUpdate();
+        })
     }
     addNewTaskScriptNameHandler(){
         this.renderRoot.getElementById("taskScNameDialog").show = true;
@@ -582,6 +606,9 @@ class PgFlowDesign extends LitElement {
         this._taskScriptList.push({scriptName:"test1.vsd",remark:"候选人脚本1"});
         this.renderRoot.getElementById("taskScNameDialog").show = false;
         this.requestUpdate();
+    }
+    taskScriptChangeHandler(e){debugger
+        this.getScriptContent("fybx2","assignee",e.detail.value)
     }
     fieldClickHandler(table,field,e){debugger
         console.log("fieldClickHandler",field);
@@ -615,6 +642,161 @@ class PgFlowDesign extends LitElement {
                 element.getOverlay("OVERLAY_CONNECTION_ACTIONS_ID").setLabel('<div title="双击删除连线" style="margin-bottom:20px">' + e.detail.value + '</div>');
             }
         });
+    }
+    /******code edit******/
+    initEditor(editor,txtId) {
+        let that = this;
+        editor = CodeMirror.fromTextArea(this.renderRoot.getElementById(txtId), {
+            theme: "monokai",//"night",
+            extraKeys: {"Alt-/": "autocomplete"},
+            lineNumbers: true,
+            matchBrackets: true,
+            autofocus: true,
+            //hintOptions:{completeSingle: false}
+            mode: "text/x-vivid"
+        });
+        editor.on('keyup', function (cm, name, Event) {
+            //定义按哪些键时弹出提示框
+            if (that.isShow(name.keyCode)) {
+
+                var datas = {};
+                var cur = cm.getCursor();
+                var ch = cur.ch;
+                var line = cur.line;
+                var lineStr = cm.getLine(line);
+                //var fromS = lineStr.lastIndexOf("_");
+                var fromSD = lineStr.lastIndexOf(".");
+                var endS = lineStr.length;
+                //console.log("lineStr:",lineStr,"fromS:",fromS,"fromSD:",fromSD)
+                console.log("lineStr:", lineStr, "fromSD:", fromSD)
+                var token = cm.getTokenAt(cur);
+                console.log("tk:", token);
+                var obj = {};
+                var dont = {};
+                //自定义的API关键字
+                obj.DbOpen = ["DbOpen(connStr)"];
+                obj.HttpOpen = ["HttpOpen(method,url,header,param,timeout)"];
+                obj.println = ["println(obj)"];
+                obj.len = ["len(obj)"];
+                obj.type = ["type(obj)"];
+                obj.$dot = ["tostring()", "toint()", "split(separater)", "string()", "json()", "select(sql,params)"];
+
+                var packgeArrary = ["db", "cache", "log", "http", "security", "timer", "webTools", "webParams", "collectionTools", "mail", "vm"];
+
+                if (token.string.indexOf(".") == 0) {  //点完提示
+                    var list = obj["$dot"];
+                    if (token.string.length == 1) {
+
+                        datas.list = list;
+                        datas.from = {};
+                        datas.from.line = line;
+                        datas.from.ch = token.start + 1; //ch; 选中替换token开始位置
+                        datas.to = {};
+                        datas.to.line = line;
+                        datas.to.ch = ch;
+
+                        editor.showHint1({completeSingle: false}, datas);
+                        return;
+                    } else {  //继续输入
+                        var functioStr = token.string.substring(1, token.string.length).toLowerCase();
+                        var showList = [];
+                        var showList2 = [];
+                        for (var a = 0; a < list.length; a++) {
+                            var info = list[a];
+                            if (info.toLowerCase().lastIndexOf(functioStr) > -1) {
+                                showList.push(info);
+                                showList2.push(a);
+                                console.log(info, a);
+                            }
+                        }
+                        datas.list = showList;
+                        datas.showList = showList2;
+                        datas.key = list[0];
+                        datas.from = {};
+                        datas.from.line = line;
+                        datas.from.ch = token.start + 1;
+                        datas.to = {};
+                        datas.to.line = line;
+                        datas.to.ch = ch;
+                        editor.showHint1({completeSingle: false}, datas);
+                        return;
+                    }
+                }
+
+                if (token.string.length > 1) {
+                    //处理分号 ;
+                    var curToken = token.string;
+                    var tokenStart = token.start;
+                    if (token.string[0] == ";") {
+                        curToken = curToken.substr(1, curToken.length - 1);
+                        tokenStart = tokenStart + 1;
+                    }
+
+                    for (var k in obj) {
+                        console.log("k:", k, "cur:", curToken);
+                        if (k.indexOf(curToken) > -1) {
+                            lineStr = k;  //lineStr.substring(token.start,token.end);
+                            var list = obj[lineStr];
+
+                            datas.list = list;
+                            datas.from = {};
+                            datas.from.line = line;
+                            datas.from.ch = tokenStart; //ch; 选中替换token开始位置
+                            datas.to = {};
+                            datas.to.line = line;
+                            datas.to.ch = ch + 1;
+
+                            editor.showHint1({completeSingle: false}, datas);
+                            return;
+                        } else {
+                            editor.showHint();
+                        }
+                    }
+                }
+            }
+        });
+        return editor;
+    }
+    editorSetValue(val) {
+        if (this._editorDecision == null) {
+            this._editorDecision = this.initEditor(this._editorDecision, "decitionScriptCode");
+        }debugger
+        this._editorDecision.setValue(val);
+        this._editorDecision.refresh();
+    }
+    getScriptContent(pname,category,scriptName){
+        if(scriptName == ""){
+            var val = this.getDefaultFn(category);
+            this.editorSetValue(val);
+            //this.setTestPlacehodler(category);
+            return;
+        }
+        FlowDesignTaskScriptContentApi({processName:"fybx2",scriptName:scriptName}).then(res => {
+            this.editorSetValue(res.data.scriptContent);
+            // $("#decitionRemark").val(res.data.remark);
+            // if(res.data.testContent)
+            //     $("#txbScriptText").val(res.data.testContent);
+            // else
+            //     setTestPlacehodler(category);
+        })
+    }
+    getDefaultFn(category){
+        if(category === "assignee"){
+            return 'let TaskCall=fn(ctx){\n\n}'
+        } else if(category === "decision"){
+            return 'let DecisionCall=fn(ctx){\n\n}'
+        }else{
+            return '错误的编辑器参数'
+        }
+    }
+    isShow(z) {
+        if(z == "8" ||z == "173"||z == "190"||z == "189" ||z == "110" ||z == "65" || z == "66" ||z == "67" ||z == "68" ||z == "69" ||z == "70" ||z == "71" ||z == "72" ||z == "73" ||z == "74" ||z == "75" ||z == "76" ||
+            z == "77" || z == "78" ||z == "79" ||z == "80" ||z == "81" ||z == "82" ||z == "83" ||z == "84" ||z == "85" ||z == "86" ||z == "87" ||z == "88" ||z == "89" ||z == "90" )
+        {
+            return true;
+        }else{
+            return false;
+        }
     }
     disconnectedCallback() {
         if(this._jsPlumb) {

@@ -151,9 +151,9 @@ display: flex !important;
         super.connectedCallback();
         console.log("index.js => do framework in here","router before");
         let act = window.sessionStorage.getItem("user_info");
-        // if(act == null){
-        //     window.location.href = "/login";
-        // }
+        if(act == null){
+            window.location.href = "/login";
+        }
     }
 }
 window.customElements.define('pg-index', PgIndex);
