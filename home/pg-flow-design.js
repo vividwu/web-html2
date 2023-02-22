@@ -8,7 +8,7 @@ import { VvTabContent } from '../components/vv-tab-content.js';
 import { VvSelect } from '../components/vv-select.js';
 import {VvIcon } from '../components/vv-icon.js'
 import { VvEditTable } from '../components/vv-edit-table.js'
-import {TestApi,FlowDesignTaskScriptListApi,FlowDesignTaskScriptContentApi} from '../webapi.js';
+import {TestApi,FlowDesignTaskScriptListApi,FlowDesignTaskScriptContentApi,QueryString,FlowDesignProcessByNameApi} from '../webapi.js';
 import '../jsplumb2.6.8.js';
 import { VvTagInput } from '../components/vv-tag-input.js?v=0.1'
 import { VvDialog } from '../components/vv-dialog.js?v=0.1'
@@ -17,6 +17,7 @@ import { editorCss } from  '../components/codemirror-css.js'
 import '../components/codemirror/mode/vivid/vivid.js'
 import '../components/codemirror/addon/hint/show-hint.js'
 import '../components/codemirror/addon/edit/matchbrackets.js'
+import { VvSwitch } from '../components/vv-switch.js?v=0.3'
 
 class PgFlowDesign extends LitElement {
     static get properties() {
@@ -179,6 +180,55 @@ class PgFlowDesign extends LitElement {
         left: 12px;font-weight: bold;
     font-size: 1rem;
 }
+.connection-actions{
+    z-index: 10;
+}
+.connection-actions>div {
+    /*color: #7d838f;*/
+    border: 2px solid #ff6d5a;
+    background-color: #ffffff;
+    border-radius: 4px;
+    height: 1.5rem;
+    width: 1.5rem;
+    cursor: pointer;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    position: absolute;
+    top: -12px
+}
+.connection-actions>div.delete {
+    left: 4px;
+    display:block!important;
+    text-align:center;
+}
+.fa-trash{
+    color:#ff6d5a;
+    border-color:#ff6d5a;
+}
+
+.svg-inline--fa {
+    display: inline-block;
+    font-size: inherit;
+    height: 1em;
+    overflow: visible;
+    vertical-align: -0.125em;
+}
+svg:not(:root).svg-inline--fa {
+    overflow: visible;
+}
+
+.svg-inline--fa.fa-w-14 {
+    width: 0.875em;
+    margin-bottom:1px;
+}
+.connection-actions>div svg {
+    pointer-events: none;
+}
         `
         ]
     }
@@ -225,6 +275,7 @@ class PgFlowDesign extends LitElement {
         };
         this._commonEnd = {
             isTarget: true,
+            maxConnections: -1,
             /*connector: ['Flowchart'],*/
             endpoint: ["Dot", {radius: 5}],
             endpointStyle : { fill:"#fc5531" },
@@ -242,7 +293,7 @@ class PgFlowDesign extends LitElement {
             connectionsDetachable: true,
         };
         //links 每一根连线
-        this._flowData = { nodes:[{"id":"begin","key":"begin","type":"begin","pt":"120px","pl":"10px"},
+        this._flowData = {nodes:[],links:[]};  /*{ nodes:[{"id":"begin","key":"begin","type":"begin","pt":"120px","pl":"10px"},
                 {"id":"end","key":"end","type":"end","pt":"120px","pl":"850px"},
                 {"id":"taskDriectLeader","key":"taskDriectLeader","type":"task","desc":"直接上级审批","pt":"120px","pl":"160px"},
                 {"id":"taskHrbp","key":"taskHrbp","type":"task","desc":"HRBP审批","pt":"120px","pl":"380px"},
@@ -250,14 +301,21 @@ class PgFlowDesign extends LitElement {
             links:[{"id":"con_2","from":"begin","to":"taskDriectLeader","desc":"","spp":"Right","tpp":"Left"},
                 {"id":"con_3","from":"taskDriectLeader","to":"taskHrbp","desc":"标签","spp":"Right","tpp":"Left"},
                 {"id":"con_4","from":"taskHrbp","to":"taskCEO","desc":">10天","spp":"Right","tpp":"Left"},
-                {"id":"con_5","from":"taskCEO","to":"end","desc":"","spp":"Right","tpp":"Left"}] };  /*{"nodes":[{"id":"begin","key":"begin","type":"begin","desc":"开始","pt":"112.25px","pl":"10px"},{"id":"end","key":"end","type":"end","desc":"结束","pt":"112.25px","pl":"850px"},{"id":"taskDriectLeader","key":"taskDriectLeader","type":"task","desc":"直接上级审批","pt":"112.25px","pl":"160px"},{"id":"taskHrbp","key":"taskHrbp","type":"task","desc":"HRBP审批","pt":"112.25px","pl":"380px"},{"id":"taskCEO","key":"taskCEO","type":"task","desc":"CEO审批","pt":"112.25px","pl":"650px"},{"id":"task_1674894467038","key":"task_1674894467038","type":"task","desc":"task","pt":"247px","pl":"520px"}],"links":[{"id":"con_1","from":"begin","to":"taskDriectLeader","desc":"","endpoints":["Right","Left"]},{"id":"con_11","from":"taskDriectLeader","to":"taskHrbp","desc":"标签","endpoints":["Right","Left"]},{"id":"con_21","from":"taskHrbp","to":"taskCEO","desc":">10天","endpoints":["Right","Left"]},{"id":"con_31","from":"taskCEO","to":"end","desc":"","endpoints":["Right","Left"]},{"id":"con_69","from":"begin","to":"taskDriectLeader","desc":"","endpoints":["Right","Left"]},{"id":"con_79","from":"taskDriectLeader","to":"taskHrbp","desc":"标签","endpoints":["Right","Left"]},{"id":"con_89","from":"taskHrbp","to":"taskCEO","desc":">10天","endpoints":["Right","Left"]},{"id":"con_99","from":"taskCEO","to":"end","desc":"","endpoints":["Right","Left"]},{"id":"con_148","from":"taskHrbp","to":"task_1674894467038","desc":"","endpoints":["Bottom","Left"]},{"id":"con_153","from":"task_1674894467038","to":"taskCEO","desc":"","endpoints":["Right","Bottom"]}]}*/
+                {"id":"con_5","from":"taskCEO","to":"end","desc":"","spp":"Right","tpp":"Left"}] };*/  /*{"nodes":[{"id":"begin","key":"begin","type":"begin","desc":"开始","pt":"112.25px","pl":"10px"},{"id":"end","key":"end","type":"end","desc":"结束","pt":"112.25px","pl":"850px"},{"id":"taskDriectLeader","key":"taskDriectLeader","type":"task","desc":"直接上级审批","pt":"112.25px","pl":"160px"},{"id":"taskHrbp","key":"taskHrbp","type":"task","desc":"HRBP审批","pt":"112.25px","pl":"380px"},{"id":"taskCEO","key":"taskCEO","type":"task","desc":"CEO审批","pt":"112.25px","pl":"650px"},{"id":"task_1674894467038","key":"task_1674894467038","type":"task","desc":"task","pt":"247px","pl":"520px"}],"links":[{"id":"con_1","from":"begin","to":"taskDriectLeader","desc":"","endpoints":["Right","Left"]},{"id":"con_11","from":"taskDriectLeader","to":"taskHrbp","desc":"标签","endpoints":["Right","Left"]},{"id":"con_21","from":"taskHrbp","to":"taskCEO","desc":">10天","endpoints":["Right","Left"]},{"id":"con_31","from":"taskCEO","to":"end","desc":"","endpoints":["Right","Left"]},{"id":"con_69","from":"begin","to":"taskDriectLeader","desc":"","endpoints":["Right","Left"]},{"id":"con_79","from":"taskDriectLeader","to":"taskHrbp","desc":"标签","endpoints":["Right","Left"]},{"id":"con_89","from":"taskHrbp","to":"taskCEO","desc":">10天","endpoints":["Right","Left"]},{"id":"con_99","from":"taskCEO","to":"end","desc":"","endpoints":["Right","Left"]},{"id":"con_148","from":"taskHrbp","to":"task_1674894467038","desc":"","endpoints":["Bottom","Left"]},{"id":"con_153","from":"task_1674894467038","to":"taskCEO","desc":"","endpoints":["Right","Bottom"]}]}*/
         //请求
-        this._flowLinks = [];//this._flowData.links;
+        this.processName = QueryString("pname");
         this._jsPlumb = null;
-        console.log("init elems",this._flowElems)
-        TestApi().then(res => {  //云服停了
+        console.log("init elems",this._flowData.nodes);
+        FlowDesignProcessByNameApi(this.processName).then(res => {
             console.log('webapi',res);
-            this._flowElems = [];//this._flowData.nodes;
+            if(res.data == null){
+                this._flowData.nodes = [{"id":"begin","key":"begin","type":"begin","pt":"120px","pl":"10px"},
+                    {"id":"end","key":"end","type":"end","pt":"120px","pl":"850px"}];
+                this._flowData.links = [];
+            }else{
+                this._flowData.nodes = res.data.nodes;
+            }
+            //this._flowElems = [];//this._flowData.nodes;
             this.requestUpdate();
         })
         //{"success":true,"message":null,"data":[{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"费用发生部门","value":"occurs_dept_code","required":"y"},{"label":"合计费用","value":"amount","required":"y"},{"label":"报销原因","value":"reason","required":"n"}],"label":"费用报销单主表","value":"fm_fybx_info"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"费用项","value":"item_code","required":"n"},{"label":"发生日期","value":"occurs_time","required":"n"},{"label":"费用项金额","value":"qty","required":"y"}],"label":"费用报销单明细表","value":"fm_fybx_detail"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"经理意见","value":"fm_jingli_yijian","required":"n"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"}],"label":"","value":"fm_test"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"经理意见","value":"fm_jingli_yijian","required":"n"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"}],"label":"1","value":"fm_qingjia"}],"errCode":null,"ext":null};
@@ -288,14 +346,14 @@ class PgFlowDesign extends LitElement {
             })
         });
         this.__conIds = [];
-        //
-        this._flowElems = [];
         /*task script*/
         this._taskScriptList = [];
         //
         this._editorDecision;
+        //删除连线
+        this.selectedLink;
         }
-        render(){console.log("pg-flow-design render2")
+        render(){console.log("pg-flow-design render2",QueryString("pname"))
             return html`<div class="page-content gray-bg">
         <div class="top-header panel panel-custom panel-white panel-shadow gutter-b">
             <div class="panel-text">page-top</div>
@@ -311,7 +369,7 @@ class PgFlowDesign extends LitElement {
                     <div class="col-lg-12"><vv-card><vv-tag-input id="taskScript" @ve-click="${this.tiClickHandler}"></vv-tag-input>
                     <vv-select id="testSelect"><vv-option value="1">a</vv-option><vv-option value="2">b</vv-option></vv-select>
                     <div class="m-5" style="height:350px">
-                        ${this._flowElems.map(i => this.renderFlowElem(i) )}</div></vv-card>
+                        ${this._flowData.nodes.map(i => this.renderFlowElem(i) )}</div></vv-card>
                     </div>
                 </div>
             </div>
@@ -321,11 +379,11 @@ class PgFlowDesign extends LitElement {
                 <vv-tab-content key="c1" name="Active1">
                    ${this.__tableConfig.map(i => this.renderDbFieldItem(i))}
                 </vv-tab-content>
-                <vv-tab-content key="c2" name="Active2">
-                    ${this._flowElems.map(i => this.renderProperty(i) )}
+                <vv-tab-content key="c2" name="Node">
+                    ${this._flowData.nodes.map(i => this.renderProperty(i) )}
                 </vv-tab-content>
-                <vv-tab-content key="c3" name="Active3">
-                    ${this._flowLinks.map(i => this.renderLinkProperty(i) )}
+                <vv-tab-content key="c3" name="Link">
+                    ${this._flowData.links.map(i => this.renderLinkProperty(i) )}
                 </vv-tab-content>
             </vv-tab>
         </div>
@@ -333,10 +391,12 @@ class PgFlowDesign extends LitElement {
     <vv-dialog id="taskScDialog" width="650">
         <vv-tab activekey="tc1">
                 <vv-tab-content key="tc1" name="ActiveTc1">
-                    <div class="form-group row"><label>步骤编号:</label><vv-input></vv-input></div>
+                    <div class="form-group row"><div class="col-sm-12"><label>步骤编号:</label>
+                            <vv-input></vv-input></div>
+                        </div>
                     <div class="form-group row">
                     <div class="col-sm-4">
-                        <vv-select @change="${this.taskScriptChangeHandler}">${this._taskScriptList.map(i=>html`<vv-option value="${i.scriptName}">${i.remark}</vv-option>`)}</vv-select>
+                        <vv-select id="taskScriptList" @change="${this.taskScriptChangeHandler}">${this._taskScriptList.map(i=>html`<vv-option value="${i.scriptName}">${i.remark}</vv-option>`)}</vv-select>
                     </div>
                     <div class="col-sm-4"><vv-input></vv-input></div>
                     <div class="col-sm-4">
@@ -351,6 +411,7 @@ class PgFlowDesign extends LitElement {
                     <vv-input></vv-input>
                 </vv-tab-content>
             </vv-tab>
+            <div slot="footer"><vv-button @click="${this.updateTaskScriptNameHandler}">保存脚本</vv-button></div>
     </vv-dialog>
     <vv-dialog id="taskScNameDialog">
         <div class="form-group row">
@@ -372,7 +433,7 @@ class PgFlowDesign extends LitElement {
                 }else if(con.type === 'end'){
                     return html`<div id="end" class="sharp node-end node-circle" datatype="end" style="top:${con.pt};left:${con.pl}" @click="${(e)=>{this.conClickHandler('end',e)}}">结束</div>`
                 }else if(con.type === 'decision'){
-                    return html`<div id="${con.id}" class="sharp"><div class="node-diamond" datatype="decision" style="top:${con.pt};left:${con.pl}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"><span>X</span></div></div>`
+                    return html`<div id="${con.id}" class="sharp" datatype="decision" style="top:${con.pt};left:${con.pl}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"><div class="node-diamond"><span>X</span></div></div>`
                 }else{
                     return html`<div id="${con.id}" class="sharp node-box" datatype="task" style="top:${con.pt};left:${con.pl}" @click="${(e)=>{this.conClickHandler(con.id,e)}}">
         <div class="node-info-icon"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></div>
@@ -385,11 +446,17 @@ class PgFlowDesign extends LitElement {
         if(con.id != this.selectedId){ return ''; }
         return Object.keys(con).map(key => {
             if(key === "id"){
-                return html`<div class="form-group row"><label>步骤编号:</label><vv-input disabled value="${con[key]}"></vv-input></div>`
+                return html`<div class="form-group row"><label>步骤编号</label><vv-input disabled value="${con[key]}"></vv-input></div>`
             }else if(key === "desc"){
-                return html`<div class="form-group row"><label>步骤名称:</label><vv-input value="${con[key]}" @veinput="${(e)=>{this.propertyInputHandler('desc',con,e)}}"></vv-input></div>`
-            }else if(key === "size"){
-                return html`<div class="form-group row"><label>候选人脚本:</label><vv-select @change="${(e)=>{this.propertyInputHandler('size',con,e)}}" value="${con[key]}"><vv-option value="2">2</vv-option><vv-option value="4">4</vv-option><vv-option value="6">6</vv-option><vv-option value="8">8</vv-option><vv-option value="12">12</vv-option></vv-select></div>`
+                return html`<div class="form-group row"><label>步骤名称</label><vv-input value="${con[key]}" @veinput="${(e)=>{this.propertyInputHandler('desc',con,e)}}"></vv-input></div>`
+            }else if(key === "assigneeScript"){
+                return html`<div class="form-group row"><label>候选人脚本</label><vv-tag-input id="taskAssigneeScript" @ve-click="${this.tiClickHandler}"></vv-tag-input></div>`
+            }else if(key === "action"){
+                return html`<div class="form-group row"><label>绑定表单</label><vv-select @change="${(e)=>{this.propertyInputHandler('action',con,e)}}" defaultValue="${con[key]}"><vv-option value="2">2</vv-option><vv-option value="4">4</vv-option></vv-select></div>`
+            }else if(key === "performType"){
+                return html`<div class="form-group row"><label>审批方式</label><vv-select @change="${(e)=>{this.propertyInputHandler('performType',con,e)}}" defaultValue="${con[key]}"><vv-option value="any">任一人审批</vv-option><vv-option value="all">所有人审批</vv-option></vv-select></div>`
+            }else if(key === "taskAutoExecute"){
+                return html`<div class="form-group row"><label>自动通过</label><div class="ml-3"><vv-switch @change="${(e)=>{this.propertyInputHandler('taskAutoExecute',con,e)}}" ?checked=${con[key]}></vv-switch></div></div>`
             }else if(key === "column"){debugger
                 return html`<div class="row mb-5">
                     ${con["column"].map(i=> html`<a href="javascript:;" class="btn btn-sm font-weight-bolder btn-light-primary mb-2 mr-2">${i.labelName}</a>`)}
@@ -402,9 +469,9 @@ class PgFlowDesign extends LitElement {
         if(con.id != this.selectedId){ return ''; }
         return Object.keys(con).map(key => {
             if(key === "id"){
-            return html`<div class="form-group row"><label>连线ID:</label><vv-input disabled value="${con[key]}"></vv-input></div>`
+            return html`<div class="form-group row"><label>连线ID</label><vv-input disabled value="${con[key]}"></vv-input></div>`
         }else if(key === "desc"){
-            return html`<div class="form-group row"><label>连线标签:</label><vv-input value="${con[key]}" @veinput="${(e)=>{this.propertyInputLinkHandler('desc',con,e)}}"></vv-input></div>`
+            return html`<div class="form-group row"><label>连线标签</label><vv-input value="${con[key]}" @veinput="${(e)=>{this.propertyInputLinkHandler('desc',con,e)}}"></vv-input></div>`
         }
     });
     }
@@ -419,7 +486,7 @@ class PgFlowDesign extends LitElement {
         this.renderRoot.getElementById("taskScript").value = "abcd.vds";
     }
     getFormData(){
-        console.log(jsPlumb.getAllConnections(),this._flowElems,this.__conIds)
+        console.log(jsPlumb.getAllConnections(),this._flowData.nodes,this.__conIds)
     }
     saveFormData() {
         let that = this;
@@ -436,7 +503,7 @@ class PgFlowDesign extends LitElement {
                 id: element.id,
                 from: element.sourceId,
                 to: element.targetId,
-                desc: label.replace('<div title="双击删除连线" style="margin-bottom:20px">',"").replace('</div>',""),
+                desc: label.replace('<div style="margin-bottom:20px">',"").replace('</div>',""),
                 spp: that.getAnchorType(element.endpoints[0].anchor), tpp: that.getAnchorType(element.endpoints[1].anchor)
             });
         });
@@ -459,23 +526,28 @@ class PgFlowDesign extends LitElement {
         }
     }
     shouldUpdate(changedProperties) {  //有配置才更新
-        console.log("flow design should update2",this._flowElems.length);
-        // if(this._flowElems.length == 0)
-        //     return false;
-        // else
-            return true;
+        console.log("flow design should update2",this._flowData.nodes);
+        if(this._flowData.nodes.length == 0)
+            return false;
+        else
+           return true;
     }
     jsPlumbRender(){
         let that = this;
         jsPlumb.ready(() => {
+            that._jsPlumb = jsPlumb.getInstance();
             setTimeout(function() {
-                jsPlumb.bind('connection', function (info) {debugger
+                that._jsPlumb.bind('connection', function (info) {debugger
                     console.log('connect event', info);
                     let con=info.connection;
                     that.addConnectionActionsOverlay(con);
+                    //
+                    that._flowData.links.push({id:con.id,from:con.sourceId,to:con.targetId,desc:"",spp: that.getAnchorType(con.endpoints[0].anchor), tpp: that.getAnchorType(con.endpoints[1].anchor)});
                 });
-                jsPlumb.bind('click', function (conn, originalEvent) {debugger
+                that._jsPlumb.bind('click', function (conn, originalEvent) {debugger
                     console.log("click event:",conn.id);
+                    // 给选中的线条赋值
+                    that.selectedLink = conn
                     that.selectedId = conn.id;
                 })
                 //
@@ -504,23 +576,23 @@ class PgFlowDesign extends LitElement {
             });
                 that._flowData.nodes.map(c=>{
                     if(c.type == "begin"){
-                    jsPlumb.addEndpoint(that.renderRoot.getElementById('begin'), { anchor: 'Right' }, that._commonBegin);
+                    that._jsPlumb.addEndpoint(that.renderRoot.getElementById('begin'), { anchor: 'Right' }, that._commonBegin);
                 }else if(c.type == "end"){
-                    jsPlumb.addEndpoint(that.renderRoot.getElementById('end'), { anchor: 'Left' }, that._commonEnd);
+                    that._jsPlumb.addEndpoint(that.renderRoot.getElementById('end'), { anchor: 'Left' }, that._commonEnd);
                 } else {
-                    jsPlumb.addEndpoint(that.renderRoot.getElementById(c.id), {anchor: 'Right'}, that._commonAll);
-                    jsPlumb.addEndpoint(that.renderRoot.getElementById(c.id), {anchor: 'Left'}, that._commonAll);
-                    jsPlumb.addEndpoint(that.renderRoot.getElementById(c.id), {anchor: 'Top'}, that._commonAll);
-                    jsPlumb.addEndpoint(that.renderRoot.getElementById(c.id), {anchor: 'Bottom'}, that._commonAll);
+                    that._jsPlumb.addEndpoint(that.renderRoot.getElementById(c.id), {anchor: 'Right'}, that._commonAll);
+                    that._jsPlumb.addEndpoint(that.renderRoot.getElementById(c.id), {anchor: 'Left'}, that._commonAll);
+                    that._jsPlumb.addEndpoint(that.renderRoot.getElementById(c.id), {anchor: 'Top'}, that._commonAll);
+                    that._jsPlumb.addEndpoint(that.renderRoot.getElementById(c.id), {anchor: 'Bottom'}, that._commonAll);
                 }
-                jsPlumb.draggable(that.renderRoot.getElementById(c.id));
+                that._jsPlumb.draggable(that.renderRoot.getElementById(c.id));
             });
                 //
-                that._jsPlumb = jsPlumb.getInstance();
+                //that._jsPlumb = jsPlumb.getInstance();
                 //
             },100);
     });
-        this._flowElems.map(c=>{
+        this._flowData.nodes.map(c=>{
 
         });
     }
@@ -529,8 +601,8 @@ class PgFlowDesign extends LitElement {
     }
     updated(changedProperties) {
         console.log("flow design update2");
-        // if(!this._jsPlumb)
-        //     this.jsPlumbRender();
+        if(!this._jsPlumb)
+            this.jsPlumbRender();
     }
     addConnectionActionsOverlay(conn) {debugger
         if (conn.getOverlay('OVERLAY_CONNECTION_ACTIONS_ID')) {
@@ -543,43 +615,59 @@ class PgFlowDesign extends LitElement {
                 desc = c.desc;
             }
         });
-
+        let that = this;
         conn.addOverlay([
             'Label',
             {
-                id: 'OVERLAY_CONNECTION_ACTIONS_ID',  //connection-actions
-                label: '<div title="双击删除连线" style="margin-bottom:20px">'+desc+'</div>',
+                id: 'OVERLAY_CONNECTION_ACTIONS_ICON',  //connection-actions
+                label: '<div title="删除连线" class="delete"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="trash" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash fa-w-14"><path data-v-66d5c7e2="" fill="currentColor" d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" class=""></path></svg></div>',
                 cssClass: 'connection-actions',
                 //location:[0.5,0.5],
                 visible: true,
                 events: {
                     mousedown: function (labelOverlay, originalEvent) {
                         debugger
-                        var element = originalEvent.target;
-                        if (element.classList.contains('delete') || (element.parentElement && element.parentElement.classList.contains('delete'))) {
-                            //onDelete();
-                            console.log('onDelete', element)
-                        } else if (element.classList.contains('add') || (element.parentElement && element.parentElement.classList.contains('add'))) {
-                            //onAdd();
-                            console.log('onAdd', element)
-                        }
+                        that._jsPlumb.deleteConnection(labelOverlay.component);
+                        //jsPlumb.reset();
+                        that._flowData.links.forEach((v,i)=>{
+                            if(v.id == labelOverlay.component.id){
+                                that._flowData.links.splice(i,1);
+                                return;
+                            }
+                        });
+                        // var element = originalEvent.target;
+                        // if (element.classList.contains('delete') || (element.parentElement && element.parentElement.classList.contains('delete'))) {
+                        //     //onDelete();
+                        //     console.log('onDelete', element)
+                        // }
                     }
                 }
+            }
+        ]);
+
+        conn.addOverlay([
+            'Label',
+            {
+                id: 'OVERLAY_CONNECTION_ACTIONS_ID',  //connection-actions
+                label: '<div style="margin-bottom:20px">'+desc+'</div>',
+                cssClass: 'connection-text',
+                //location:[0.5,0.5],
+                visible: true
             }
         ]);
     }
     addEndpointSharp(newNode){
         let that = this;
         setTimeout(function() {
-            jsPlumb.addEndpoint(that.renderRoot.getElementById(newNode.id), {anchor: 'Right'}, that._commonAll);
-            jsPlumb.addEndpoint(that.renderRoot.getElementById(newNode.id), {anchor: 'Left'}, that._commonAll);
-            jsPlumb.addEndpoint(that.renderRoot.getElementById(newNode.id), {anchor: 'Top'}, that._commonAll);
-            jsPlumb.addEndpoint(that.renderRoot.getElementById(newNode.id), {anchor: 'Bottom'}, that._commonAll);
-            jsPlumb.draggable(that.renderRoot.getElementById(newNode.id));
+            that._jsPlumb.addEndpoint(that.renderRoot.getElementById(newNode.id), {anchor: 'Right'}, that._commonAll);
+            that._jsPlumb.addEndpoint(that.renderRoot.getElementById(newNode.id), {anchor: 'Left'}, that._commonAll);
+            that._jsPlumb.addEndpoint(that.renderRoot.getElementById(newNode.id), {anchor: 'Top'}, that._commonAll);
+            that._jsPlumb.addEndpoint(that.renderRoot.getElementById(newNode.id), {anchor: 'Bottom'}, that._commonAll);
+            that._jsPlumb.draggable(that.renderRoot.getElementById(newNode.id));
         },200);
     }
     addNode(){
-        let newNode = {"id":"task_"+new Date().getTime(),"key":"task_"+new Date().getTime(),"type":"task","desc":"task","pt":"100px","pl":"300px"};
+        let newNode = {"id":"task_"+new Date().getTime(),"key":"task_"+new Date().getTime(),"type":"task","desc":"task","pt":"100px","pl":"300px","assigneeScript":"","action":"","performType":"any","taskAutoExecute":true};
         this._flowData.nodes.push(newNode);
         this.requestUpdate();
         this.addEndpointSharp(newNode);
@@ -607,13 +695,22 @@ class PgFlowDesign extends LitElement {
         this.renderRoot.getElementById("taskScNameDialog").show = false;
         this.requestUpdate();
     }
+    updateTaskScriptNameHandler(){
+        if(this.renderRoot.getElementById("taskScriptList").value) {
+            VvMessage.success("保存成功");
+            this.renderRoot.getElementById("taskScDialog").show = false;
+            this.renderRoot.getElementById("taskScript").value = this.renderRoot.getElementById("taskScriptList").value;
+        }else{
+            VvMessage.error("未选择任何脚本");
+        }
+    }
     taskScriptChangeHandler(e){debugger
         this.getScriptContent("fybx2","assignee",e.detail.value)
     }
     fieldClickHandler(table,field,e){debugger
         console.log("fieldClickHandler",field);
         if(field.control == "input"){
-            this._flowElems.push({"id":table+"$"+field.name,"type":"input","labelName":field.title,"size":12});
+            this._flowData.nodes.push({"id":table+"$"+field.name,"type":"input","labelName":field.title,"size":12});
         }
         this.requestUpdate();
     }
@@ -623,23 +720,23 @@ class PgFlowDesign extends LitElement {
     }
     propertyInputHandler(prop,con,e){debugger
         console.log("propertyInputHandler",con,e);
-        this._flowElems.forEach((v,i)=>{
+        this._flowData.nodes.forEach((v,i)=>{
             if(v.id == con.id){
-                this._flowElems[i][prop] = e.detail.value;
+                this._flowData.nodes[i][prop] = e.detail.value;
             }
         });
         this.requestUpdate();
     }
     propertyInputLinkHandler(prop,con,e){debugger
         console.log("propertyInputLinkHandler",con,e);
-        this._flowLinks.forEach((v,i)=>{
+        this._flowData.links.forEach((v,i)=>{
                 if(v.id == con.id){
-                this._flowLinks[i][prop] = e.detail.value;
+                this._flowData.links[i][prop] = e.detail.value;
             }
         });
         jsPlumb.getAllConnections().forEach(function (element, index) {
             if(element.id == con.id) {
-                element.getOverlay("OVERLAY_CONNECTION_ACTIONS_ID").setLabel('<div title="双击删除连线" style="margin-bottom:20px">' + e.detail.value + '</div>');
+                element.getOverlay("OVERLAY_CONNECTION_ACTIONS_ID").setLabel('<div style="margin-bottom:20px">' + e.detail.value + '</div>');
             }
         });
     }
@@ -798,6 +895,10 @@ class PgFlowDesign extends LitElement {
             return false;
         }
     }
+    connectedCallback(){
+        super.connectedCallback();
+    }
+
     disconnectedCallback() {
         if(this._jsPlumb) {
             this._jsPlumb.clear();

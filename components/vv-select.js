@@ -11,8 +11,7 @@ export class VvSelect extends LitElement {
             // value: String,
             text: String,
             size: String,
-            placeholder: String,
-            noLabel: { type: Boolean, reflect: true },  /*设置完只写属性Key也可以*/
+            defaultValue: String,
             open: { type: Boolean, reflect: true },
             multiple: { type: Boolean, reflect: true },
             removable: { type: Boolean, reflect: true },
@@ -502,13 +501,17 @@ select.selectpicker {
         this.myArray=[1,2,3];
         this.size = "sm"
         this.placeholder = "Full name"
-        this.noLabel = false,
         this.open = false
     }
     get value() {
         return this._value;
     }
-    set value(value) {
+    set value(value) {debugger
+        if(value != this.value){
+            const cur = this.querySelector(`vv-option[value="${value}"]`)||this.querySelector(`vv-option`);
+            cur.selected = true;
+            this.text = cur.textContent;
+        }
         this._value = value;
     }
     render() {
@@ -516,7 +519,7 @@ select.selectpicker {
 							<button type="button" tabindex="-1" @click="${this.clickHandler}" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" title="${this.text}" selected-value="${this.value}">
 							<div class="filter-option" style="width:100%;display: flex;overflow:hidden;align-items:center;white-space:nowrap;">
 							
-							${this.multiple?html`<vv-tag class="label-sm" style="display:inline-flex;align-items:center;" removable>${this.text}</vv-tag>`:html`<span style="height:16px;display:inline-flex;align-items:center;">${this.text}</span>`}
+							${this.multiple?html`<vv-tag class="label-sm" style="display:inline-flex;align-items:center;" removable>${this._text}</vv-tag>`:html`<span style="height:16px;display:inline-flex;align-items:center;">${this.text}</span>`}
 							
 							</div>
 							${this.removable?html`<vv-icon name="close-circle-fill" @click="${this.clickClearHandler}" style="display: inline-flex;align-items: center;width: 1.25em;font-size: inherit;border: none;background: none;padding: 0px;cursor: pointer;margin-right:8px"></vv-icon>`:''}
@@ -525,7 +528,7 @@ select.selectpicker {
 							<vv-popup2 @focus="${this.focusPopupHandler}" @blur="${this.blurPopupHandler}" @option-click="${this.optionClickHander}">
                                 <div class="inner show" role="listbox" id="bs-select-1" tabindex="-1" aria-activedescendant="bs-select-1-2" style="max-height: 142.85px; overflow-y: auto; min-height: 0px;">
                                 <ul class="dropdown-menu inner show" role="presentation" style="margin-top: 0px; margin-bottom: 0px;">
-                                <slot></slot>
+                                <slot id="slot"></slot>
                                 </ul>
 							</vv-popup2>
 							</div></div>`;
@@ -568,6 +571,15 @@ select.selectpicker {
     connectedCallback() {
         super.connectedCallback();debugger
         document.addEventListener('mousedown',this.setpop);
+    }
+    firstUpdated(changedProperties) {debugger
+        this.shadowRoot.getElementById('slot').addEventListener('slotchange', () => {
+            if(!this.defaultValue) {
+                this.value = '';
+            } else {
+                this.value = this.defaultValue;
+            }
+        });
     }
     setpop = (ev) => {
         const path = ev.path || (ev.composedPath && ev.composedPath());//debugger

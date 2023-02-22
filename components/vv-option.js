@@ -110,7 +110,7 @@ li {
         return html`<li class="${this.selected?'selected active':''}" option-value="${this.value}">
             <a role="option" style="display: flex" class="dropdown-item ${this.selected?'selected active':''}" id="bs-select-1-2" tabindex="0" aria-setsize="3" aria-posinset="3" aria-selected="true">
 													<vv-icon name="check" size="20" style="display: inline-flex;align-items: center;margin-right:8px"></vv-icon>
-													<span class="text" style="display: inline-flex;align-items:center;overflow:hidden;align-items:center;white-space:nowrap;">
+													<span class="text" style="display:inline-flex;align-items:center;overflow:hidden;align-items:center;white-space:nowrap;">
 															<slot></slot>
 														</span></a>
 														</li>`;

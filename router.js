@@ -18,6 +18,13 @@ const routes = [{
 			await import('./home/pg-login.js');
 		},
 	},
+	{
+		path: '/controls',
+		component: 'pg-controls',
+		action: async () => {
+			await import('./home/pg-controls.js');
+		},
+	},
    {
     	path: '/',  /*need login*/
     	component: 'pg-index',
@@ -51,6 +58,13 @@ const routes = [{
 						component: 'approve-page',
 						action: async () => {
 							await import('./flow/apply-page.js');
+						},
+					},
+					{
+						path: 'template',
+						component: 'pg-flow-temp',
+						action: async () => {
+							await import('./flow/pg-flow-temp.js');
 						},
 					},
 				  {
