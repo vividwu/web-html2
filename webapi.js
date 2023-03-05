@@ -19,7 +19,11 @@ export const SendMailTestNodeApi = (params) => request.post(`http://10.12.28.45:
 //flow design
 export const FlowDesignTaskScriptListApi = (params) => request.get(`/api/config/process/script/porcess_scripts`,{params});
 export const FlowDesignTaskScriptContentApi = (params) => request.get(`/api/config/process/script/content`,{params});
+export const FlowDesignRunTestScriptApi = (params) => request.post(`api/config/process/script/test`,params);
 export const FlowDesignProcessByNameApi = (pname) => request.get('/api/config/process/'+pname,{});
+export const FlowDesignRunScriptLogApi = (params) => request.get('/api/config/process/script/log',{params});
+//ou
+export const OuGetDeptTreeByPIdApi = () => request.get('/dept/list/all');
 
 export const QueryString = (item) => {
     var result = location.href.match(new RegExp("[\?\&]" + item + "=([^\&]+)","i"));

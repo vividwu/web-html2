@@ -7,6 +7,7 @@ export class VvTreeview extends LitElement {
             type: String,
             title: String,
             text: String,
+            data: { type: Array, reflect: true },
             show:  { type: Boolean, reflect: true }
         };
     }
@@ -220,7 +221,7 @@ export class VvTreeview extends LitElement {
     }
     render(){debugger
         return html`<ul class="jstree-container-ul jstree-children">
-${this._data.map(i=>this.renderChildren(i))}
+${this.data?this.data.map(i=>this.renderChildren(i)):'暂无数据'}
 </ul>`
         /*return html`<ul class="jstree-container-ul jstree-children">
     <li role="none" id="j1_1" class="jstree-node">

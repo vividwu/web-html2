@@ -570,7 +570,7 @@ select.selectpicker {
     }
     connectedCallback() {
         super.connectedCallback();debugger
-        document.addEventListener('mousedown',this.setpop);
+        //document.addEventListener('mousedown',this.setpop);
     }
     firstUpdated(changedProperties) {debugger
         this.shadowRoot.getElementById('slot').addEventListener('slotchange', () => {

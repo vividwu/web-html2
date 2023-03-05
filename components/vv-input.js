@@ -50,6 +50,8 @@ constructor() {
     }
     set value(value) {
         this._value = value;
+        if (this.shadowRoot.getElementById("input"))
+            this.shadowRoot.getElementById("input").value = this._value;
     }
   render(){
     return html`<input id="input" type="email" class="form-control form-control-sm" placeholder="${this.placeholder}" value="${this._value}"/>`;

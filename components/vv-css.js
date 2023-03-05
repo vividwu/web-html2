@@ -461,6 +461,16 @@ a:not([href]):not([class]) {
     .gutter-b {
   margin-bottom: 25px; }
 
+.col-md-offset-7 {
+    margin-left: 58.33333333%;
+}
+.col-md-5 {
+    width: 41.66666667%;
+}
+.col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+    float: left;
+}
+
 .gutter-t {
   margin-top: 25px; }
   
@@ -798,7 +808,9 @@ label {
 }
 .d-flex {
   display: flex !important; }
-  
+.flex-column {
+    flex-direction: column !important;
+}
 .justify-content-between {
   justify-content: space-between !important; }
   .align-items-center {

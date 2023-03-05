@@ -365,7 +365,7 @@ select.selectpicker {
 							<button type="button" tabindex="-1" @click="${this.clickHandler}" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" title="${this.text}" selected-value="${this.value}">
 							<div class="filter-option" style="width:100%;display: flex;">
 							
-							${this.value?html`<vv-tag class="label-sm" style="display:inline-flex;align-items:center;" removable>${this.value}</vv-tag>`:html`<span style="height:16px;display:inline-flex;align-items:center;"></span>`}
+							${this.value?html`<vv-tag id="removeIcon" class="label-sm" style="display:inline-flex;align-items:center;" removable>${this.value}</vv-tag>`:html`<span style="height:16px;display:inline-flex;align-items:center;"></span>`}
 							
 							</div>
 							</button>
@@ -374,20 +374,21 @@ select.selectpicker {
     }
     clickHandler(e) {
         console.log('btn click',e.target);debugger  //
+        const path = e.path || (e.composedPath && e.composedPath());
+        if(this.renderRoot.getElementById("removeIcon") &&
+            this.renderRoot.getElementById("removeIcon").renderRoot &&
+            path.includes(this.renderRoot.getElementById("removeIcon").renderRoot.querySelector("vv-icon[name='close-circle-fill']"))){
+            this.value = "";
+        }
         if(e.target.nodeName == "VV-TAG"){
             return false;
         }
-        //this.open = true;debugger
-        //this.renderRoot.querySelector("vv-popup2").show = true;
         let event = new CustomEvent('ve-click', {
             detail: {
                 value: e.detail.value
             }
         });
         this.dispatchEvent(event);
-    }
-    clickClearHandler(e) {
-        console.log('clear',e.target);  //
     }
     blurPopupHandler(e){debugger
         console.log('popup blur',e.target);  //点option先触发

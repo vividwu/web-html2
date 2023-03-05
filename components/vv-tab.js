@@ -30,7 +30,7 @@ export class VvTab extends LitElement {
   .nav-tabs {
   border-bottom: 2px solid #E4E6EF; }
 .nav-link {
-  display: block;
+  display: block;cursor: pointer;
   padding: 0.5rem 1rem; }
   .nav-link:hover, .nav-link:focus {
     text-decoration: none; }
@@ -132,7 +132,7 @@ export class VvTab extends LitElement {
                 li.setAttribute("class","nav-item");
                 li.setAttribute("data-key",node.key);
                 let a = document.createElement("A");
-                a.setAttribute("href","#"+node.key);
+                //a.setAttribute("href","#"+node.key);
                 a.innerText = node.name;
                 if(that.activekey===null){
                     that.activekey = that.shadowRoot.getElementById('slot')[0].key;

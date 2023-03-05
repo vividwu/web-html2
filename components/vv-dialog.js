@@ -8,6 +8,7 @@ export class VvDialog extends LitElement {
             title: String,
             text: String,
             width: String,
+            height: String,
             show:  { type: Boolean, reflect: true }
         };
     }
@@ -96,7 +97,7 @@ export class VvDialog extends LitElement {
         this.show = false
     }
     render(){debugger
-        return html`<div class="dialog" style="${this.width?'width:'+this.width+'px':''}">
+        return html`<div class="dialog" style="${this.width?'width:'+this.width+'px':''};${this.height?'height:'+this.height+'px':''}">
     <div class="dialog-content">
         <div class="dialog-header px-4 py-3">
             <h4 class="text-left font-weight-bold m-0">${this.title}</h4>

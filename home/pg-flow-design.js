@@ -8,9 +8,10 @@ import { VvTabContent } from '../components/vv-tab-content.js';
 import { VvSelect } from '../components/vv-select.js';
 import {VvIcon } from '../components/vv-icon.js'
 import { VvEditTable } from '../components/vv-edit-table.js'
-import {TestApi,FlowDesignTaskScriptListApi,FlowDesignTaskScriptContentApi,QueryString,FlowDesignProcessByNameApi} from '../webapi.js';
+import {TestApi,FlowDesignTaskScriptListApi,FlowDesignTaskScriptContentApi,QueryString,FlowDesignProcessByNameApi,
+    FlowDesignRunTestScriptApi,FlowDesignRunScriptLogApi} from '../webapi.js';
 import '../jsplumb2.6.8.js';
-import { VvTagInput } from '../components/vv-tag-input.js?v=0.1'
+import { VvTagInput } from '../components/vv-tag-input.js?v=0.2'
 import { VvDialog } from '../components/vv-dialog.js?v=0.1'
 import '../components/codemirror/lib/codemirror.js'
 import { editorCss } from  '../components/codemirror-css.js'
@@ -18,6 +19,7 @@ import '../components/codemirror/mode/vivid/vivid.js'
 import '../components/codemirror/addon/hint/show-hint.js'
 import '../components/codemirror/addon/edit/matchbrackets.js'
 import { VvSwitch } from '../components/vv-switch.js?v=0.3'
+import { VvTitle } from '../components/vv-title.js'
 
 class PgFlowDesign extends LitElement {
     static get properties() {
@@ -202,7 +204,7 @@ class PgFlowDesign extends LitElement {
     top: -12px
 }
 .connection-actions>div.delete {
-    left: 4px;
+    top:10px;
     display:block!important;
     text-align:center;
 }
@@ -228,6 +230,17 @@ svg:not(:root).svg-inline--fa {
 }
 .connection-actions>div svg {
     pointer-events: none;
+}
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+.alert {
+    padding: 15px;
+    /*margin-bottom: 20px;*/
+    border: 1px solid transparent;
+    border-radius: 4px;
 }
         `
         ]
@@ -308,12 +321,12 @@ svg:not(:root).svg-inline--fa {
         console.log("init elems",this._flowData.nodes);
         FlowDesignProcessByNameApi(this.processName).then(res => {
             console.log('webapi',res);
-            if(res.data == null){
+            if(res.data != null){  //TODO 最终要改成  == null
                 this._flowData.nodes = [{"id":"begin","key":"begin","type":"begin","pt":"120px","pl":"10px"},
                     {"id":"end","key":"end","type":"end","pt":"120px","pl":"850px"}];
                 this._flowData.links = [];
             }else{
-                this._flowData.nodes = res.data.nodes;
+                this._flowData.nodes = res.data.flowDesignLayout;
             }
             //this._flowElems = [];//this._flowData.nodes;
             this.requestUpdate();
@@ -348,10 +361,13 @@ svg:not(:root).svg-inline--fa {
         this.__conIds = [];
         /*task script*/
         this._taskScriptList = [];
+        this._taskScriptName = "";
         //
         this._editorDecision;
         //删除连线
         this.selectedLink;
+        //script param
+        this._scriptSession;
         }
         render(){console.log("pg-flow-design render2",QueryString("pname"))
             return html`<div class="page-content gray-bg">
@@ -391,9 +407,6 @@ svg:not(:root).svg-inline--fa {
     <vv-dialog id="taskScDialog" width="650">
         <vv-tab activekey="tc1">
                 <vv-tab-content key="tc1" name="ActiveTc1">
-                    <div class="form-group row"><div class="col-sm-12"><label>步骤编号:</label>
-                            <vv-input></vv-input></div>
-                        </div>
                     <div class="form-group row">
                     <div class="col-sm-4">
                         <vv-select id="taskScriptList" @change="${this.taskScriptChangeHandler}">${this._taskScriptList.map(i=>html`<vv-option value="${i.scriptName}">${i.remark}</vv-option>`)}</vv-select>
@@ -406,6 +419,14 @@ svg:not(:root).svg-inline--fa {
                     <div class="form-group row"><div class="col-sm-12">
                         <textarea id="decitionScriptCode" class="form-control"></textarea></div>
                     </div>
+                    
+                    <div class="form-group row"><div class="col-sm-10">
+                        <vv-input id="txbScriptText"></vv-input>
+                    </div><div class="col-sm-2"><vv-button  @click="${this.taskScriptRunTestHandler}">测试</vv-button></div>
+                    </div>
+                    <vv-title title="输出"></vv-title>
+                    <div class="row alert alert-info" id="msgTest" style="margin-top:15px;"></div>
+                    
                 </vv-tab-content>
                 <vv-tab-content key="tc2" name="ActiveTc2">
                     <vv-input></vv-input>
@@ -450,13 +471,15 @@ svg:not(:root).svg-inline--fa {
             }else if(key === "desc"){
                 return html`<div class="form-group row"><label>步骤名称</label><vv-input value="${con[key]}" @veinput="${(e)=>{this.propertyInputHandler('desc',con,e)}}"></vv-input></div>`
             }else if(key === "assigneeScript"){
-                return html`<div class="form-group row"><label>候选人脚本</label><vv-tag-input id="taskAssigneeScript" @ve-click="${this.tiClickHandler}"></vv-tag-input></div>`
+                return html`<div class="form-group row"><label>候选人脚本</label><vv-tag-input id="tagScript" @ve-click="${this.tiClickHandler}"></vv-tag-input></div>`
             }else if(key === "action"){
                 return html`<div class="form-group row"><label>绑定表单</label><vv-select @change="${(e)=>{this.propertyInputHandler('action',con,e)}}" defaultValue="${con[key]}"><vv-option value="2">2</vv-option><vv-option value="4">4</vv-option></vv-select></div>`
             }else if(key === "performType"){
                 return html`<div class="form-group row"><label>审批方式</label><vv-select @change="${(e)=>{this.propertyInputHandler('performType',con,e)}}" defaultValue="${con[key]}"><vv-option value="any">任一人审批</vv-option><vv-option value="all">所有人审批</vv-option></vv-select></div>`
             }else if(key === "taskAutoExecute"){
                 return html`<div class="form-group row"><label>自动通过</label><div class="ml-3"><vv-switch @change="${(e)=>{this.propertyInputHandler('taskAutoExecute',con,e)}}" ?checked=${con[key]}></vv-switch></div></div>`
+            }else if(key === "expScript"){
+                return html`<div class="form-group row"><label>决策脚本</label><vv-tag-input id="tagScript" @ve-click="${this.tiClickHandler}"></vv-tag-input></div>`
             }else if(key === "column"){debugger
                 return html`<div class="row mb-5">
                     ${con["column"].map(i=> html`<a href="javascript:;" class="btn btn-sm font-weight-bolder btn-light-primary mb-2 mr-2">${i.labelName}</a>`)}
@@ -486,7 +509,7 @@ svg:not(:root).svg-inline--fa {
         this.renderRoot.getElementById("taskScript").value = "abcd.vds";
     }
     getFormData(){
-        console.log(jsPlumb.getAllConnections(),this._flowData.nodes,this.__conIds)
+        console.log(this._jsPlumb.getAllConnections(),this._flowData.nodes,this.__conIds)
     }
     saveFormData() {
         let that = this;
@@ -497,7 +520,7 @@ svg:not(:root).svg-inline--fa {
                 pt: that.getStyle(element, "top"), pl: that.getStyle(element, "left")
             });
         });
-        jsPlumb.getAllConnections().forEach(function (element, index) {
+        this._jsPlumb.getAllConnections().forEach(function (element, index) {
             let label = element.getOverlay("OVERLAY_CONNECTION_ACTIONS_ID").label;
             flowElems.links.push({
                 id: element.id,
@@ -553,7 +576,7 @@ svg:not(:root).svg-inline--fa {
                 //
                 that._flowData.links.map(c=>{
                     debugger
-                    let conn = jsPlumb.connect({
+                    let conn = that._jsPlumb.connect({
                         source: that.renderRoot.getElementById(c.from),
                         target: that.renderRoot.getElementById(c.to),
                         //cid: c.id,  no work
@@ -673,17 +696,26 @@ svg:not(:root).svg-inline--fa {
         this.addEndpointSharp(newNode);
     }
     addDecision(){
-        let newNode = {"id":"dec_"+new Date().getTime(),"key":"dec_"+new Date().getTime(),"type":"decision","pt":"100px","pl":"300px"};
+        let newNode = {"id":"dec_"+new Date().getTime(),"key":"dec_"+new Date().getTime(),"desc":"","expScript":"","type":"decision","pt":"100px","pl":"300px"};
         this._flowData.nodes.push(newNode);
         this.requestUpdate();
         this.addEndpointSharp(newNode);
     }
     tiClickHandler(e){
         console.log("ve:",e);debugger
+        this._taskScriptName = e.target.value;
+        let that = this;
         this.renderRoot.getElementById("taskScDialog").show = true;
-        FlowDesignTaskScriptListApi({processName:"fybx2"}).then(res => {
+        FlowDesignTaskScriptListApi({processName:this.processName}).then(res => {
             console.log('task script list',res);
-            this._taskScriptList = res.data;
+            let scList = [];
+            res.data.forEach(function(v,i) {
+                if (that.getCategory() != v.category) {  //只绑定本类型的下拉
+                    return;
+                }
+                scList.push(v);
+            });
+            this._taskScriptList = scList;
             this.requestUpdate();
         })
     }
@@ -699,13 +731,20 @@ svg:not(:root).svg-inline--fa {
         if(this.renderRoot.getElementById("taskScriptList").value) {
             VvMessage.success("保存成功");
             this.renderRoot.getElementById("taskScDialog").show = false;
-            this.renderRoot.getElementById("taskScript").value = this.renderRoot.getElementById("taskScriptList").value;
+            this.renderRoot.getElementById("tagScript").value = this.renderRoot.getElementById("taskScriptList").value;
         }else{
             VvMessage.error("未选择任何脚本");
         }
     }
+    getCategory(){
+        if(this.selectedId.indexOf("dec_")==0){
+            return "decision";
+        }else{
+            return "assignee";  //task_
+        }
+    }
     taskScriptChangeHandler(e){debugger
-        this.getScriptContent("fybx2","assignee",e.detail.value)
+        this.getScriptContent(this.processName,this.getCategory(),e.detail.value)
     }
     fieldClickHandler(table,field,e){debugger
         console.log("fieldClickHandler",field);
@@ -734,7 +773,7 @@ svg:not(:root).svg-inline--fa {
                 this._flowData.links[i][prop] = e.detail.value;
             }
         });
-        jsPlumb.getAllConnections().forEach(function (element, index) {
+        this._jsPlumb.getAllConnections().forEach(function (element, index) {
             if(element.id == con.id) {
                 element.getOverlay("OVERLAY_CONNECTION_ACTIONS_ID").setLabel('<div style="margin-bottom:20px">' + e.detail.value + '</div>');
             }
@@ -868,13 +907,13 @@ svg:not(:root).svg-inline--fa {
             //this.setTestPlacehodler(category);
             return;
         }
-        FlowDesignTaskScriptContentApi({processName:"fybx2",scriptName:scriptName}).then(res => {
+        FlowDesignTaskScriptContentApi({processName:this.processName,scriptName:scriptName}).then(res => {debugger
             this.editorSetValue(res.data.scriptContent);
             // $("#decitionRemark").val(res.data.remark);
-            // if(res.data.testContent)
-            //     $("#txbScriptText").val(res.data.testContent);
-            // else
-            //     setTestPlacehodler(category);
+            if(res.data.testContent)
+                this.renderRoot.getElementById("txbScriptText").value = res.data.testContent;
+            else
+                this.setTestPlacehodler("assignee");
         })
     }
     getDefaultFn(category){
@@ -885,6 +924,41 @@ svg:not(:root).svg-inline--fa {
         }else{
             return '错误的编辑器参数'
         }
+    }
+    taskScriptRunTestHandler(){
+        this.renderRoot.getElementById("msgTest").innerText = '测试中...';
+        //var cat = getDlgCategory();
+        let that = this;
+        FlowDesignRunTestScriptApi({category: this.getCategory(), scriptContent: this._editorDecision.getValue(),
+            testContent: this.renderRoot.getElementById("txbScriptText").value}).then(res => {
+            console.log('webapi',res);
+            if(res.success){
+                let succText = '[成功] ' + res.data.result;
+                that.renderRoot.getElementById("msgTest").innerText = succText;
+                that._scriptSession = res.data.session;
+                FlowDesignRunScriptLogApi({category: "test",id: res.data.session}).then(res2 => {
+                    if(res2){
+                        that.renderRoot.getElementById("msgTest").innerText = succText  + '\r\n[日志]\r\n' + res2;
+                    }
+                })
+            }else{
+                that.renderRoot.getElementById("msgTest").innerText = '[失败] ' + res.message;
+            }
+        });
+    }
+    getDefaultTestCtx(category){
+        category = "assignee"
+        if(category === "assignee"){
+            return '测试入参eg:{"creator":"申请人ID","operator":"节点操作人ID","name":"节点名","parent_operator":"上一节点操作人ID","parent_name":"上一节点名","args":表单提交对象}'
+        }else if(category === "decision"){
+            return '测试入参eg:{"creator":"申请人ID","operator":"节点操作人ID","name":"节点名","args":表单提交对象}}';
+        }else{
+            return '错误的编辑器参数'
+        }
+    }
+    setTestPlacehodler(category){
+        let ctx = this.getDefaultTestCtx(category);
+        this.renderRoot.getElementById("txbScriptText").placeholder = ctx;
     }
     isShow(z) {
         if(z == "8" ||z == "173"||z == "190"||z == "189" ||z == "110" ||z == "65" || z == "66" ||z == "67" ||z == "68" ||z == "69" ||z == "70" ||z == "71" ||z == "72" ||z == "73" ||z == "74" ||z == "75" ||z == "76" ||
