@@ -1,16 +1,21 @@
 import {LitElement, html, css} from '../lit-core.min.js';
 import { coreCss } from './vv-css.js';
 import { VvIcon } from './vv-icon.js';
+import { VvCascader } from '../components/vv-cascader.js';
 export class VvEditTable extends LitElement {
     static get properties() {
-        return {  id: String,
+        return {
+            id: String,
             type: String,
             size: String,
             labelName: String,
-            editable: { type: Boolean, reflect: true },
-            column: { type: Array, reflect: true},  //[{title:'编号',key:'no',render:function(row){return html`<b>row.no+'.'</b>`;}}]
-            data: { type: Array, reflect: true } };
+            design: {type: Boolean, reflect: true},
+            editable: {type: Boolean, reflect: true},
+            column: {type: Array, reflect: true},  //[{title:'编号',key:'no',render:function(row){return html`<b>row.no+'.'</b>`;}}]
+            data: {type: Array, reflect: true}
+        };
     }
+
     static get styles() {
         return [
             coreCss,
@@ -18,7 +23,7 @@ export class VvEditTable extends LitElement {
             :host{
     display: block;
     width: 100%;
-    overflow-x: auto;
+    /*overflow-x: auto;会影响popup弹出容器出滚动*/
     -webkit-overflow-scrolling: touch;
     /*background:#ffffff;底色*/
 }
@@ -75,6 +80,7 @@ th {
         `
         ]
     }
+
     // set columns(val) {debugger;console.log("set columns",val);
     //     let oldVal = this._columns;
     //     this._columns = val;
@@ -87,10 +93,13 @@ th {
         this.type = "table";
         this.column = [];
         this._column = [];
-        this.data=[];console.log('table constructor',this.column)
+        this.data = [];
+        console.log('table constructor', this.column)
     }
-    render(){//3
-        console.log('table init',this.column);debugger
+
+    render() {//3
+        console.log('table init', this.column);
+        debugger
         return html`<div class="card card-custom gutter-b">
 									<div class="card-header border-0 py-5">
 										<div class="card-title">
@@ -101,51 +110,75 @@ th {
 									<div class="card-body">
 										<table class="table table-head-custom table-vertical-center"><thead>
 										<tr class="text-left">
-${this.column?this.column.map(i => html`<th>${i.labelName}</th>`):''}
-${this.editable?html`<th>操作</th>`:''}
+${this.column ? this.column.map(i => html`<th class="col-sm-${i.size}" @click="${(e) =>{this.onTitleClickHandler(e,i)}}">${i.labelName}${this.design ? html`<vv-icon name="close-circle-fill" color="#ed5565" class="elem-delete" @click="${(e) =>{this.onColumnRemoveHandler(e,i)}}"></vv-icon>` : ''}</th>`):''}
+${this.editable ? html`<th>操作</th>` : ''}
 </tr>
 </thead>
 <tbody>
-${this.data?this.data.map((d,i) => html`<tr>
-    ${this.column?this.column.map(col => html`<td>${this.renderCellControl(col,d[col.id])}</td>`):''}
-    ${this.editable?html`<td><vv-icon @click="${()=>{this.delRowClick(i)}}" name="close-circle-fill" color="#ed5565"></vv-icon></td>`:''}
+${this.data ? this.data.map((d, i) => html`<tr>
+    ${this.column ? this.column.map(col => html`<td>${this.renderCellControl(col, d[col.id])}</td>`):''}
+    ${this.editable ? html`<td><vv-icon @click="${() =>{this.delRowClick(i)}}" name="close-circle-fill" color="#ed5565"></vv-icon></td>` : ''}
 </tr>`):''}
-</tbody></table>${this.data?'':html`<div style="text-align:center;padding-bottom:10px">暂无数据</div>`}
+</tbody></table>${this.data ? '' : html`<div style="text-align:center;padding-bottom:10px">暂无数据</div>`}
 </div>
 </div>`;
     }
-    setColumn(col){debugger
+
+    setColumn(col) {
+        debugger
         console.log('setColumn')
         this._column = col;
         this.column = col;
     }
+
     connectedCallback() {//2
-        super.connectedCallback();console.log('table connect',this.column);
+        super.connectedCallback();
+        console.log('table connect', this.column);
         let event = new CustomEvent('pre-render', {
             detail: {}
         });
         this.dispatchEvent(event);
     }
-    addRowClick(){
+
+    addRowClick() {
         let newRow = {};
-        this.column.map(d=>{
+        this.column.map(d => {
             newRow[d.id] = "";
-        });
+    })
+        ;
         this.data.push(newRow);
         this.requestUpdate();
     }
-    delRowClick(i){
-        this.data.splice(i,1);
+
+    delRowClick(i) {
+        this.data.splice(i, 1);
         this.requestUpdate();
     }
-    renderCellControl(columnConfig,data){
-        if(columnConfig.type == "input"){
+
+    renderCellControl(columnConfig, data) {
+        if (columnConfig.type == "input") {
             return html`<vv-input name="${columnConfig.id}" value="${data}"></vv-input>`
-        }else if(columnConfig.type == "select"){
+        } else if (columnConfig.type == "select") {
             return html`<vv-select name="${columnConfig.id}"></vv-select>`
-        }else if(columnConfig.type == "date"){
+        } else if (columnConfig.type == "date") {
             return html`<vv-date name="${columnConfig.id}"></vv-date>`
+        } else if (columnConfig.type == "cascader") {
+            return html`<vv-cascader name="${columnConfig.id}"></vv-cascader>`
         }
+    }
+
+    onTitleClickHandler(e, col) {
+        let event = new CustomEvent('title-click', {
+            detail: {column: col}
+        });
+        this.dispatchEvent(event);
+    }
+
+    onColumnRemoveHandler(e, col) {
+        let event = new CustomEvent('column-remove', {
+            detail: {column: col}
+        });
+        this.dispatchEvent(event);
     }
 }
 if(!customElements.get('vv-edit-table')) {

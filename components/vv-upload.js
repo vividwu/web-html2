@@ -8,6 +8,7 @@ export class VvUpload extends LitElement {
         return {  id: String,
             type: String,
             size: String,
+            url:String,
             text: String,
             uploadingText: String,
             muted: String };
@@ -270,7 +271,7 @@ export class VvUpload extends LitElement {
         //server
         uppyMin.use(Uppy.XHRUpload, {
             id: 'XHRUpload',
-            endpoint: 'http://10.12.28.45:8899/utils/excel_2json',
+            endpoint: this.url,
             method: 'post',
             formData: true,
             fieldName: 'files',

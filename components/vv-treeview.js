@@ -177,7 +177,7 @@ export class VvTreeview extends LitElement {
     <i class="jstree-icon jstree-themeicon vv-icon-wrapper jstree-icon-close" @click="${(e)=>this.iconClick(e,node.id)}" role="presentation">
         <svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
     </i>
-    <span @click="${(e)=>this.lableClick(e,node.id)}">${node.label}</span>
+    <span @click="${(e)=>this.lableClick(e,node.id,node.ext)}">${node.label}</span>
 </a>
 <ul class="jstree-children child-close">${node.children.map(i=> this.renderChildren(i) )}</ul>
 </li>`;
@@ -190,7 +190,7 @@ export class VvTreeview extends LitElement {
     <i class="jstree-icon jstree-ocl" role="presentation"></i>
     <a class="jstree-anchor" href="javascript:;" aria-level="1" id="${node.id}_anchor">
             <i class="jstree-icon jstree-ocl" role="presentation"></i>
-            <span @click="${(e)=>this.lableClick(e,node.id)}">${node.label}</span>
+            <span @click="${(e)=>this.lableClick(e,node.id,node.ext)}">${node.label}</span>
     </a>
 </li>`
     }
@@ -205,7 +205,7 @@ export class VvTreeview extends LitElement {
             child.classList.toggle("child-close");
         }
     }
-    lableClick(e,id){debugger
+    lableClick(e,id,ext){debugger
         const anchors = this.renderRoot.querySelectorAll(".jstree-anchor");
         anchors.forEach((anchor)=>{ anchor.classList.remove("jstree-clicked") });
         this.renderRoot.getElementById(id+"_anchor").classList.toggle("jstree-clicked");
@@ -213,7 +213,8 @@ export class VvTreeview extends LitElement {
             let event = new CustomEvent('label-click', {
                 detail: {
                     id: id,
-                    label: e.target.innerText
+                    label: e.target.innerText,
+                    ext: ext
                 }
             });
             this.dispatchEvent(event);
@@ -291,9 +292,6 @@ ${this.data?this.data.map(i=>this.renderChildren(i)):'暂无数据'}
     connectedCallback() {debugger
         super.connectedCallback();
         console.log('drawer connectedCallback');
-    }
-    closeClick(e) {debugger
-        this.show = false;
     }
     firstUpdated(changedProperties) {
 

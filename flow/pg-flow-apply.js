@@ -7,9 +7,14 @@ import { VvTab } from '../components/vv-tab.js';
 import { VvTabContent } from '../components/vv-tab-content.js';
 import { VvSelect } from '../components/vv-select.js';
 import {VvIcon } from '../components/vv-icon.js'
+import { CcUserInfo } from '../components/cc-user-info.js'
 import { CcOrderInfo } from '../components/cc-order-info.js'
-import {TestApi} from '../webapi.js';
-
+import { CcDeptSelector } from '../components/cc-dept-selector.js';
+import {FlowApplyGetConfigApi} from '../webapi.js';
+import { CcSelect } from '../components/cc-select.js';
+import { VvDate } from '../components/vv-date.js';
+import { VvTagInput } from '../components/vv-tag-input.js?v=0.1';
+import { VvTag } from '../components/vv-tag.js';
 class PgFlowApply extends LitElement {
     static get properties() {
         return {
@@ -88,16 +93,16 @@ class PgFlowApply extends LitElement {
         super();
         this._formControls = [];
         //请求
-        TestApi().then(res => {
+        FlowApplyGetConfigApi('bx').then(res => {
             console.log('webapi',res) ;
-            this._formControls = [{id: 'CardDefault', type: 'card', child:[{id: 'bx_info$order_no', type: 'input', labelName: '申请编号', size: '4'}
+            this._formControls = eval("("+res.data.control+")");/*[{id: 'CardDefault', type: 'card', child:[{id: 'bx_info$order_no', type: 'input', labelName: '申请编号', size: '4'}
                 ,{id: 'bx_info$emp_id', type: 'input', labelName: '申请人ID', size: '4'}
     ,{id: 'bx_info$amount', type: 'input', labelName: '合计费用', size: '4'}
-    ,{id: 'bx_info$dept_code', type: 'select', labelName: '所在部门', size: '4'}]}
+    ,{id: 'bx_info$dept_code', type: 'select', labelName: '所在部门', size: '4'},{id: 'fm_bx_test_123abc$test_select', type: 'cc-select', labelName: '测试选择', size: 4, dataurl: 'http://10.12.28.45:8880/api/common/dictionary/leave_type'}]}
     ,{id: 'bx_detail', type: 'table', labelName: '报销明细', column:[
         {type: 'input', labelName: '申请单编号', id: 'bx_detailorder_no'}
         ,{type: 'input', labelName: '费用项金额', id: 'bx_detailqty'}
-        ,{type: 'date', labelName: '费用发生时间', id: 'bx_detailoccurs_time'}]}];
+        ,{type: 'date', labelName: '费用发生时间', id: 'bx_detailoccurs_time'}]}];*/
 
             this.requestUpdate();
         });
@@ -174,28 +179,48 @@ class PgFlowApply extends LitElement {
                 <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
                     <div class="col-sm-9"><vv-input id="${con.id}" name="${con.id}"></vv-input></div>
                 </div>`
+        }else if (con.type === 'date') {
+            return html`<div id="${con.id}" class="citem col-sm-${con.size}">
+                    <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
+                        <div class="col-sm-9"><vv-date id="${con.id}" name="${con.id}" labelName="${con.labelName}"></vv-date></div>
+                        </div>`
+        }else if (con.type === 'cc-userinfo') {
+            return html`<div id="${con.id}" class="citem col-sm-${con.size}"><label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
+                         <div class="col-sm-9"><cc-user-info name="${con.id}" formType="apply" flowCode="bx2"></cc-user-info></div>`;
         }else if (con.type === 'cc-orderinfo') {
             return html`<div class="citem col-sm-${con.size}">
                 <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
                     <div class="col-sm-9"><cc-order-info id="${con.id}" name="${con.id}" formType="apply" flowCode="bx2"></cc-order-info></div>
                 </div>`
-        }else if (con.type === 'select') {
+        }else if (con.type === 'cc-select') {
             return html`<div class="citem col-sm-${con.size}">
                     <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
-                        <div class="col-sm-9"><vv-select id="${con.id}" name="${con.id}" @click="${(e)=>{this.conClickHandler(con.id,e)}}"></vv-select></div>
+                        <div class="col-sm-9"><cc-select id="${con.id}" name="${con.id}" dataurl="${con.dataurl}" formType="apply"></cc-select></div>
                     </div>`
+        }else if (con.type === 'cc-deptselector') {
+            return html`<div id="${con.id}" class="citem col-sm-${con.size}">
+                    <label class="col-sm-3 col-form-label text-sm-right">${con.labelName}</label>
+                        <div class="col-sm-9"><cc-dept-selector name="${con.id}"></cc-dept-selector>
+                    </div>`;
         }else if (con.type === 'card') {
             if (con.child) {
-                return html`<vv-card name="${con.id}">${con.child.map(i => this.renderFormControl(i) )}</vv-card>`
+                return html`<vv-card name="${con.id}" title="${con.title}">${con.child.map(i => this.renderFormControl(i) )}</vv-card>`
             }else{
-                return html`<vv-card name="${con.id}"></vv-card>`
+                return html`<vv-card name="${con.id}" title="${con.title}"></vv-card>`
             }
         }
         // });
     }
 
     getFormData(){debugger
-        console.log(this._formControls,this.renderRoot.getElementById("bx_info$emp_id").value)
+        console.log('get form data',this._formControls,this.renderRoot.querySelector("[name='fm_bx_test_123abc$emp_id']").value);
+        //外层
+        var data = {};
+        var valid = true;
+        this.renderRoot.querySelectorAll("[name*='$']").forEach((v,i)=>{ debugger
+            data[v.getAttribute("name")] = v.value;
+        })
+        console.log("form data:",data);
     }
     firstUpdated(changedProperties) {debugger
 

@@ -1,5 +1,5 @@
 import {LitElement, html, css} from '../lit-core.min.js';
-import {AuthLoginApi} from '../webapi.js';
+import {AuthLoginApi,QueryString} from '../webapi.js?v=0.1';
 import '../base64.js'
 class PgLogin extends LitElement {
     constructor() {
@@ -354,9 +354,8 @@ button, select {
             var uiStr = Base64.decode(res.data.access_token.split('.')[1]);
             var tokenObj = eval("("+uiStr+")");
             window.sessionStorage.setItem('user_info','{"uid":'+tokenObj.uid+',"uname":"'+tokenObj.uname+'","displayName":"'+tokenObj.udisplay+'"}');
-            location.href = "/";
-            // var redirect = Request.QuerySearchString("state");
-            // location.href = "/"+(redirect?unescape(redirect):"home");
+            var redirect = QueryString("state");
+            location.href = (redirect?unescape(redirect):"home");
         }).catch(err => {
             console.log('login err',err)
         });

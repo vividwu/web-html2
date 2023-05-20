@@ -507,12 +507,18 @@ select.selectpicker {
         return this._value;
     }
     set value(value) {debugger
-        if(value != this.value){
-            const cur = this.querySelector(`vv-option[value="${value}"]`)||this.querySelector(`vv-option`);
-            cur.selected = true;
-            this.text = cur.textContent;
+        if(!this.multiple) {
+            if (value != this.value) {
+                const cur = this.querySelector(`vv-option[value="${value}"]`) || this.querySelector(`vv-option`);
+                cur.selected = true;
+                this.text = cur.textContent;
+                if(this.value != ""){  //清除上一次选择
+                    const curOld = this.querySelector(`vv-option[value="${this.value}"]`) || this.querySelector(`vv-option`);
+                    curOld.selected = false;
+                }
+            }
+            this._value = value;
         }
-        this._value = value;
     }
     render() {
         return html`<div id="vvSelect" style="position: relative;width: 100%;" class="dropdown bootstrap-select form-control form-control-sm dropup ${this.open ? 'show' : ''}">
@@ -570,7 +576,7 @@ select.selectpicker {
     }
     connectedCallback() {
         super.connectedCallback();debugger
-        //document.addEventListener('mousedown',this.setpop);
+        document.addEventListener('mousedown',this.setpop);
     }
     firstUpdated(changedProperties) {debugger
         this.shadowRoot.getElementById('slot').addEventListener('slotchange', () => {
@@ -581,10 +587,13 @@ select.selectpicker {
             }
         });
     }
-    setpop = (ev) => {
+    setpop = (ev) => {//debugger
         const path = ev.path || (ev.composedPath && ev.composedPath());//debugger
-        if(!path.includes(this) && ev.which == '1' && !path.includes(ev.path.includes(this.renderRoot.getElementById("vvSelect").children[0]))){
-            this.renderRoot.querySelector("vv-popup2").show = false;
+        if(!path.includes(this) && ev.which == '1' && !path.includes(this.renderRoot.getElementById("vvSelect").children[0])){
+            if(this.renderRoot.querySelector("vv-popup2") && this.renderRoot.querySelector("vv-popup2").show){
+                ev.stopPropagation();
+                this.renderRoot.querySelector("vv-popup2").show = false;
+            }
         }
         console.log('mousedown ev',ev.target);
         console.log('path',path);

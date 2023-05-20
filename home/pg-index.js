@@ -2,6 +2,7 @@ import {LitElement, html, css} from '../lit-core.min.js';
 import {SecHeaderMenu} from './sec-header-menu.js';
 import {SecHeaderTopbar} from './sec-header-topbar.js';
 import {indexCss} from '../components/vv-css-index.js';
+
 class PgIndex extends LitElement {
     constructor() {
         super();
@@ -129,14 +130,14 @@ display: flex !important;
 						<!--begin::Copyright-->
 						<div class="text-dark order-2 order-md-1">
 							<span class="text-muted font-weight-bold mr-2">2020©</span>
-							<a href="http://keenthemes.com/metronic" target="_blank" class="text-dark-75 text-hover-primary">Keenthemes</a>
+							<a href="#" target="_blank" class="text-dark-75 text-hover-primary">Keenthemes</a>
 						</div>
 						<!--end::Copyright-->
 						<!--begin::Nav-->
 						<div class="nav nav-dark">
-							<a href="http://keenthemes.com/metronic" target="_blank" class="nav-link pl-0 pr-5">About</a>
-							<a href="http://keenthemes.com/metronic" target="_blank" class="nav-link pl-0 pr-5">Team</a>
-							<a href="http://keenthemes.com/metronic" target="_blank" class="nav-link pl-0 pr-0">Contact</a>
+							<a href="#" target="_blank" class="nav-link pl-0 pr-5">About</a>
+							<a href="#" target="_blank" class="nav-link pl-0 pr-5">Team</a>
+							<a href="#" target="_blank" class="nav-link pl-0 pr-0">Contact</a>
 						</div>
 						<!--end::Nav-->
 					</div>
@@ -149,10 +150,11 @@ display: flex !important;
     }
     connectedCallback() {
         super.connectedCallback();
-        console.log("index.js => do framework in here","router before");
+        console.log("index.js => do framework in here","router before2");debugger
         let act = window.sessionStorage.getItem("user_info");
+        let re = window.location.pathname;
         if(act == null){
-            window.location.href = "/login";
+            window.location.href = "/login?state="+re;
         }
     }
 }

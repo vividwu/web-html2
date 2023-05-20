@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+</head>
+<body>
+<style>
+    div{
+        border-color: red;
+        border-width: 1px;
+    }
+</style>
+  
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
+  
+  
+  <!-- Latest Sortable https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.8.3/Sortable.min.js-->
+  <script src="Sortable-1.15.0.js"></script>
+<button onclick="showData()">data</button>
+<input type="text" id="num" />
+<button onclick="addData()">add</button>
+<button onclick="deleteData()">delete</button>
+
+<div id="nestedDemo" class="list-group col nested-sortable list-group-item nested-1">
+                        <div id="g1" class="list-group-item nested-1 nested-sortable" style="background-color: red">Item 1.1
+                            <div id="1.1.1" class="nested-1 list-group-item">
+                                Item 1.1.1
+                            </div>
+                            <div id="1.1.2" class="nested-1 list-group-item">
+                                Item 1.1.2
+                            </div>
+                            <div id="1.1.3" class="nested-1 list-group-item">
+                                Item 1.1.3
+                            </div>
+                        </div>
+                        <div id="1.2" class="list-group-item nested-1 list-group-item">Item 1.2</div>
+                        <div  id="1.3" class="list-group-item nested-1 list-group-item">Item 1.3</div>
+                        <div id="g4" class="list-group-item nested-1 nested-sortable" style="background-color: blue">Item 1.4
+                            <div  id="1.4.1"class="nested-1 list-group-item">
+                                Item 1.4.1
+                            </div>
+                            <div id="1.4.2" class="nested-1 list-group-item">
+                                Item 1.4.2
+                            </div>
+                            <div id="1.4.3" class="nested-1 list-group-item">
+                                Item 1.4.3
+                            </div>
+                        </div>
+                        <div id="1.5" class="list-group-item nested-1 list-group-item">Item 1.5</div>
+                    </div>
+
+    <script>
+	//var nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
+    var data = [{id:'g1',child:[{id:"1.1.1"},{id:"1.1.2"},{id:"1.1.3"}]},{id:"1.2"},{id:"1.3"},{id:'g4',child:[{id:"1.4.1"},{id:"1.4.2"},{id:"1.4.3"}]},{id:"1.5"}];
+var con = document.getElementById("nestedDemo");
+	Sortable.create(con, {
+        group: 'nested',
+        draggable: '.nested-1',
+        animation: 150,
+        onUpdate:onUpdateEvent,  //顶层容器只允许有行的排序
+        onRemove:onRemoveEvent,
+
+        onMove:onMoveEvent
+    });
+    var g1 = document.getElementById("g1");
+    Sortable.create(g1, {
+        group: 'nested',
+        draggable: '.nested-1',
+        dataIdAttr: 'data-g1',
+        animation: 150,
+        onEnd:onEndEvent,
+        //onMove:onMoveEvent,
+        onAdd:onAddEvent,
+        onUpdate:onUpdateEvent,
+        onRemove:onRemoveEvent,
+
+        onMove:onMoveEvent
+    });
+    var g4 = document.getElementById("g4");
+    Sortable.create(g4, {
+        group: 'nested',
+        draggable: '.nested-1',
+        dataIdAttr: 'data-g4',
+        animation: 150,
+        onEnd:onEndEvent,
+        //onMove:onMoveEvent,
+        onAdd:onAddEvent,
+        onUpdate:onUpdateEvent,
+        onRemove:onRemoveEvent,
+
+        onMove:onMoveEvent
+    });
+
+    function onEndEvent(/**Event*/evt) {debugger
+        console.log('end',evt.from,evt.to,evt.oldIndex,evt.newIndex)  //from = to （from/to表示外层）还在一个容器内
+    }
+    function onAddEvent(/**Event*/evt) {debugger
+        console.log('add',evt.from,evt.to,evt.oldIndex,evt.newIndex)
+    }
+    // 列表内元素顺序更新的时候触发
+    function onUpdateEvent(/**Event*/evt) {debugger
+        // same properties as onEnd
+        console.log('update',evt.from,evt.to,evt.oldIndex,evt.newIndex);
+        var currentContainerId = evt.from.id;
+        // 交换
+        // old < new  删 -》加
+        // old > new  加 -》删
+        if(currentContainerId === "nestedDemo"){
+            // var swap = data[evt.newIndex];
+            // data[evt.newIndex] = data[evt.oldIndex];
+            // data[evt.oldIndex] = swap;
+                let old = data[evt.oldIndex];
+                data.splice(evt.oldIndex,1);
+                data.splice(evt.newIndex,0,old);
+                return;
+            // v.child.splice(evt.newIndex,0,data[evt.oldIndex]);  //加
+            // data.splice(evt.oldIndex,1);  //删
+            return;
+        }
+        data.forEach((v1,i1)=>{
+            if(v1.id === currentContainerId){
+                // var swap = v1.child[evt.newIndex];
+                // v1.child[evt.newIndex] = v1.child[evt.oldIndex];
+                // v1.child[evt.oldIndex] = swap;
+                let old = v1.child[evt.oldIndex];
+                v1.child.splice(evt.oldIndex,1);
+                v1.child.splice(evt.newIndex,0,old);
+                return;
+            }
+        })
+    }
+    // 元素从列表中移除进入另一个列表
+    function onRemoveEvent(/**Event*/evt) {debugger
+        console.log('remove',evt.from,evt.to,evt.oldIndex,evt.newIndex);
+        //跨容器
+        if(evt.from.id === "nestedDemo"){  //移入card
+            data.forEach((v,i)=>{
+                if(v.id === evt.to.id){  //card数据 加入新的
+                    v.child.splice(evt.newIndex,0,data[evt.oldIndex])
+                }
+            });
+            //顶层老的删除
+            data.splice(evt.oldIndex,1);
+            return;
+        }
+        if(evt.to.id === "nestedDemo"){  //移出card
+            var oldData;
+            data.forEach((v,i)=>{
+                if(v.id === evt.from.id){  //card数据 删除老的
+                    oldData = v.child[evt.oldIndex]
+                    v.child.splice(evt.oldIndex,1);
+                }
+            });
+            data.splice(evt.newIndex,0,oldData);
+            return;
+        }
+		//crad内互移
+		if(evt.from.id.startsWith("g") && evt.to.id.startsWith("g")){  //card移入card
+			var oldData;
+			data.forEach((v,i)=>{
+                if(v.id === evt.from.id){  //card数据 删除老的
+                    oldData = v.child[evt.oldIndex]
+                    v.child.splice(evt.oldIndex,1);
+                }
+            });
+            data.forEach((v,i)=>{
+                if(v.id === evt.to.id){  //card数据 加入新的
+                    v.child.splice(evt.newIndex,0,oldData);
+                }
+            });
+            return;
+        }
+    }
+
+    // 拖拽移动的时候
+    function onMoveEvent(/**Event*/evt, /**Event*/originalEvent) {
+        //Card不能嵌套
+        if(evt.dragged.id[0] == evt.to.id[0]) {
+            console.log("card cannot to nested!");
+            return false;
+        }
+    }
+    function showData() {
+        console.log(data)
+    }
+    function deleteData() {debugger
+        let ele = document.getElementById("num").value;
+        document.getElementById(ele).remove();
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].id == ele) {
+                data.splice(i,1);
+                return;
+            }
+            if (data[i].child != undefined) {
+                for (var j = 0; j < data[i].child.length; j++) {
+                    if (data[i].child[j].id == ele) {
+                        data[i].child.splice(j,1);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    function addData() {
+        let ele = document.getElementById("num").value;
+        data.push({id:ele});
+        //<div id="1.2" class="list-group-item nested-1 list-group-item">Item 1.2</div>
+        var div = document.createElement('div');
+        div.id = ele;
+        div.setAttribute('class',"list-group-item nested-1 list-group-item");
+        div.innerHTML = "Item "+ele;
+        document.getElementById("nestedDemo").appendChild(div);
+    }
+	</script>
+
+</body>
+</html>

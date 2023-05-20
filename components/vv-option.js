@@ -32,7 +32,7 @@ li {
     padding: 10px 15px; }
     
     li > a:hover {
-      text-decoration: none; }
+      text-decoration: none;border-radius: 0.42rem; }
     li > a .bs-icon {
       font-size: 1.3rem;
       vertical-align: middle;
@@ -83,7 +83,7 @@ li {
   li.dropdown-header {
     color: #7E8299; }
   li.selected > a {
-    background: #F3F6F9; }
+    background: #F3F6F9;border-radius: 0.42rem; }
   li.disabled > a {
     opacity: 0.8; }
   li.active:not(.selected) > a {
@@ -107,9 +107,9 @@ li {
         this.selected = false
     }
     render(){
-        return html`<li class="${this.selected?'selected active':''}" option-value="${this.value}">
+        return html`<li class="${this.selected?'selected active':''}" option-value="${this.value}" style="padding-left:5px;padding-right:5px;padding-bottom:5px;">
             <a role="option" style="display: flex" class="dropdown-item ${this.selected?'selected active':''}" id="bs-select-1-2" tabindex="0" aria-setsize="3" aria-posinset="3" aria-selected="true">
-													<vv-icon name="check" size="20" style="display: inline-flex;align-items: center;margin-right:8px"></vv-icon>
+													${this.selected?html`<vv-icon name="check" size="20" style="display:inline-flex;align-items:center;margin-right:8px"></vv-icon>`:html`<span style="width:20px;display:inline-flex;align-items:center;margin-right:8px"></span>`}
 													<span class="text" style="display:inline-flex;align-items:center;overflow:hidden;align-items:center;white-space:nowrap;">
 															<slot></slot>
 														</span></a>

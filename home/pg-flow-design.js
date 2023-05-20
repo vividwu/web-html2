@@ -331,33 +331,8 @@ svg:not(:root).svg-inline--fa {
             //this._flowElems = [];//this._flowData.nodes;
             this.requestUpdate();
         })
-        //{"success":true,"message":null,"data":[{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"费用发生部门","value":"occurs_dept_code","required":"y"},{"label":"合计费用","value":"amount","required":"y"},{"label":"报销原因","value":"reason","required":"n"}],"label":"费用报销单主表","value":"fm_fybx_info"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"费用项","value":"item_code","required":"n"},{"label":"发生日期","value":"occurs_time","required":"n"},{"label":"费用项金额","value":"qty","required":"y"}],"label":"费用报销单明细表","value":"fm_fybx_detail"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"经理意见","value":"fm_jingli_yijian","required":"n"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"}],"label":"","value":"fm_test"},{"children":[{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"},{"label":"经理意见","value":"fm_jingli_yijian","required":"n"},{"label":"申请单编号","value":"order_no","required":"y"},{"label":"申请人ID","value":"emp_id","required":"y"},{"label":"所在部门编码","value":"dept_code","required":"y"}],"label":"1","value":"fm_qingjia"}],"errCode":null,"ext":null};
-        this.__tableConfig = [{
-            "table": "bx_info",
-            "name":"报销主表",
-            "category":"main",
-            "fields": [{"title": "申请单编号", "name": "order_no", "control": "input"},
-                {"title": "申请人ID","name": "emp_id","control": "input"},
-                {"title": "所在部门编码","name": "dept_code","control": "select"},
-                {"title": "合计费用","name": "amount","control": "input"}]
-        }
-        ,{
-            "table": "bx_detail",
-            "name":"报销明细",
-            "category":"detail",
-            "fields": [{"title": "申请单编号", "name": "order_no", "control": "input"},
-                {"title": "费用项金额","name": "qty","control": "input"},
-                {"title": "费用发生时间","name": "occurs_time","control": "date"}]
-          }
-        ];
-        this._formData = {};  //{"b$c":{"title": "编号","control":"input"},...}
+
         let that = this;
-        this.__tableConfig.map(i=>{
-            let tb = i.table;
-            i.fields.map(j=>{
-                that._formData[tb+'$'+j.name] = j;
-            })
-        });
         this.__conIds = [];
         /*task script*/
         this._taskScriptList = [];
@@ -392,9 +367,6 @@ svg:not(:root).svg-inline--fa {
         </div>
         <div class="page-side property panel panel-custom panel-white panel-shadow gutter-b">
             <vv-tab activekey="c2">
-                <vv-tab-content key="c1" name="Active1">
-                   ${this.__tableConfig.map(i => this.renderDbFieldItem(i))}
-                </vv-tab-content>
                 <vv-tab-content key="c2" name="Node">
                     ${this._flowData.nodes.map(i => this.renderProperty(i) )}
                 </vv-tab-content>

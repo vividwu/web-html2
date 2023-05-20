@@ -130,18 +130,18 @@ export class VvTab extends LitElement {
                 //tab button
                 let li = document.createElement("LI");
                 li.setAttribute("class","nav-item");
-                li.setAttribute("data-key",node.key);
+                li.setAttribute("data-key",node.getAttribute("key"));  //node.key
                 let a = document.createElement("A");
                 //a.setAttribute("href","#"+node.key);
                 a.innerText = node.name;
                 if(that.activekey===null){
                     that.activekey = that.shadowRoot.getElementById('slot')[0].key;
                 }
-                if(node.key === that.activekey){
-                    node.renderRoot.getElementById("tp1").setAttribute("class","tab-pane fade active show");
+                if(node.getAttribute("key") === that.activekey){
+                    //node.renderRoot.getElementById("tp1").setAttribute("class","tab-pane fade active show");
                     a.setAttribute("class","nav-link active");
                 }else{
-                    node.renderRoot.getElementById("tp1").setAttribute("class","tab-pane fade");
+                    //node.renderRoot.getElementById("tp1").setAttribute("class","tab-pane fade");
                     a.setAttribute("class","nav-link");
                 }
                 li.appendChild(a);

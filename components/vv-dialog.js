@@ -83,6 +83,17 @@ export class VvDialog extends LitElement {
     overflow: auto;
     min-height: 50px;
 }
+.dialog-body::-webkit-scrollbar {
+    width:8px;
+    height:8px;
+}
+.dialog-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 5px;
+}
+.dialog-body::-webkit-scrollbar-thumb:hover {
+    background:#9f9f9f;
+}
 .dialog-footer {
     padding: 3px 0 20px 0;
     margin-top: -3px;

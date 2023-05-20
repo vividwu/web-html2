@@ -153,12 +153,18 @@ select {
 [type="reset"],
 [type="submit"] {
   -webkit-appearance: button; }
-  
-    .btn:not(:disabled):not(.disabled) {
+.btn:not(:disabled):not(.disabled) {
     cursor: pointer; }
-    .btn:not(:disabled):not(.disabled):active, .btn:not(:disabled):not(.disabled).active {
+.btn:not(:disabled):not(.disabled):active, .btn:not(:disabled):not(.disabled).active {
       box-shadow: none; }
-
+.btn.btn-hover-primary:not(:disabled):not(.disabled):active:not(.btn-text), .btn.btn-hover-primary:not(:disabled):not(.disabled).active, .show > .btn.btn-hover-primary.dropdown-toggle, .show .btn.btn-hover-primary.btn-dropdown {
+    color: #FFFFFF !important;
+    background-color: #3699FF !important;
+    border-color: #3699FF !important;
+}
+a.btn.disabled, fieldset:disabled a.btn {
+    pointer-events: none;
+}
       a {
   color: #3699FF;
   text-decoration: none;
@@ -306,6 +312,10 @@ a:not([href]):not([class]) {
   transition: fill 0.3s ease; }
 .btn.btn-primary:hover:not(.btn-text):not(:disabled):not(.disabled).dropdown-toggle:after, .btn.btn-primary:focus:not(.btn-text).dropdown-toggle:after, .btn.btn-primary.focus:not(.btn-text).dropdown-toggle:after {
     color: #FFFFFF; }
+.btn.disabled, .btn:disabled {
+    opacity: 0.6;
+    box-shadow: none;
+}
 .btn.btn-primary.disabled, .btn.btn-primary:disabled {
   color: #FFFFFF;
   background-color: #3699FF;
@@ -348,6 +358,19 @@ a:not([href]):not([class]) {
   fill: #FFFFFF !important; }
 .btn.btn-hover-primary:hover:not(.btn-text):not(:disabled):not(.disabled) .svg-icon svg:hover g [fill], .btn.btn-hover-primary:focus:not(.btn-text) .svg-icon svg:hover g [fill], .btn.btn-hover-primary.focus:not(.btn-text) .svg-icon svg:hover g [fill] {
   transition: fill 0.3s ease; }
+.btn.btn-primary .svg-icon svg g [fill] {
+    transition: fill 0.3s ease;
+    fill: #FFFFFF;
+}
+.svg-icon svg g [fill] {
+    transition: fill 0.3s ease;
+    fill: #B5B5C3;
+}
+.btn.btn-light-primary .svg-icon svg g [fill] {
+    transition: fill 0.3s ease;
+    fill: #3699FF; }
+.btn.btn-light-primary .svg-icon svg:hover g [fill] {
+    transition: fill 0.3s ease; }
 .vv-icon-wrapper {
     display: inline-flex;
     align-items: center;
@@ -744,8 +767,8 @@ a:not([href]):not([class]) {
     background-color: #F3F6F9;
     opacity: 1; }
     
-        .form-control-sm {
-    height: calc(1.35em + 1.1rem + 2px);
+.form-control-sm {
+    height: calc(1.35em + 1.1rem);  /*bottom下边+了2？(1.35em + 1.1rem + 2px)*/
     padding: 0.55rem 0.75rem;
     font-size: 0.925rem;
     line-height: 1.35;
@@ -810,6 +833,9 @@ label {
   display: flex !important; }
 .flex-column {
     flex-direction: column !important;
+}
+.flex-wrap {
+    flex-wrap: wrap !important;
 }
 .justify-content-between {
   justify-content: space-between !important; }
@@ -933,7 +959,18 @@ label {
   background-color: #eee;
   opacity: 0.9;
 }
-
+.long {
+        vertical-align:middle;
+        text-align:center;
+        word-break: break-all;/*分行*/
+        /*white-space: nowrap;不换行用这个*/
+        overflow:hidden; /*超出部分省略号显示*/
+        text-overflow:ellipsis; /*省略号显示*/
+        display:-webkit-box;
+        -webkit-text-overflow:ellipsis; /*兼容*/
+        -webkit-box-orient:vertical;
+        -webkit-line-clamp:2; /*显示2行*/
+}
 /*
  * Scrollbar thumb styles
  */

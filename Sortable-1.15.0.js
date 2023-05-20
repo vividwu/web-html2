@@ -1953,7 +1953,7 @@
 
           !insertion && nearestEmptyInsertDetectEvent(evt);
         }
-
+debugger
         !options.dragoverBubble && evt.stopPropagation && evt.stopPropagation();
         return completedFired = true;
       } // Call when dragEl has been inserted

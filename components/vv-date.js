@@ -9,12 +9,13 @@ export class VvDate extends LitElement {
             type: String,
             value: String,
             mode: String,
+            //modeSwitch: String,  //internal use
             size: String,
             labelName: String,
             placeholder: String,
             noLabel: { type: Boolean, reflect: true },  /*设置完只写属性Key也可以*/
-            removable: { type: Boolean, reflect: true },
-            myArray: Array };
+            removable: { type: Boolean, reflect: true }
+        };
     }
     static get styles() {
         return [
@@ -810,11 +811,6 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
   background-color: #337ab7;
   border-color: #2e6da4;
 }
-.datepicker table tr td span.old,
-.datepicker table tr td span.new {
-  color: #777777;
-}
-
 
  .bootstrap-datetimepicker-widget .datepicker .datepicker-days table tr td,
     .bootstrap-datetimepicker-widget .datepicker .datepicker-days table tr th {
@@ -831,7 +827,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
       .bootstrap-datetimepicker-widget .datepicker .datepicker-days table tbody tr > td:hover {
         background: #F3F6F9; }
       .bootstrap-datetimepicker-widget .datepicker .datepicker-days table tbody tr > td.old {
-        color: #7E8299; }
+        color: #c1c1c1; }
       .bootstrap-datetimepicker-widget .datepicker .datepicker-days table tbody tr > td.new {
         color: #3F4254; }
       .bootstrap-datetimepicker-widget .datepicker .datepicker-days table tbody tr > td:focus, .bootstrap-datetimepicker-widget .datepicker .datepicker-days table tbody tr > td.active {
@@ -919,27 +915,12 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 .datepicker-years table tr td,.datepicker-years table tr th{
   width: 54px;
 }
-.ki {
-    font-size: 1rem;
+
+.icon {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
 }
-
-.ki:before {
-    font-family: "Ki";
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    line-height: 1;
-    text-decoration: inherit;
-    text-rendering: optimizeLegibility;
-    text-transform: none;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-smoothing: antialiased;
-}
-.ki-arrow-back:before { content: "\\f106"; }
-.ki-arrow-next:before { content: "\\f105"; }
-
-
         `
         ]
     }
@@ -947,18 +928,29 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
         super();
         this.type = "date";
         this.mode = "date";
+        //this.modeSwitch = "date";
         //this.value = "VvDate value";
-        this.myArray=[1,2,3];
+        this.value = ""
         this.size = "sm"
-        this.labelName = "Full Name:"
         this.placeholder = "Full name"
         this.noLabel = false
+        this._value = this.getCurrentDateStr()
     }
-    render(){console.log('date render',this.open);
-        return html`<div id="vvDate" class="dropdown bootstrap-select form-control form-control-sm dropup ${this.open?'show':''}">
+    get modeSwitch() {
+        return this._modeSwitch == undefined?this.mode:this._modeSwitch;
+    }
+    set modeSwitch(value) {
+        this._modeSwitch = value;
+        this.requestUpdate();
+    }
+    getCurrentDateStr(){
+        return new Date().getFullYear() + "-" + (new Date().getMonth()+1+"").padStart(2,"0") + "-" + (new Date().getDate()+"").padStart(2,"0");
+    }
+    render(){console.log('date render',this.open);debugger
+        return html`<div id="vvDate" style="position: relative;width: 100%;" class="dropdown bootstrap-select form-control form-control-sm dropup ${this.open?'show':''}">
 							<button type="button" tabindex="-1" @click="${this.clickHandler}" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" title="${this.text}" selected-value="${this.value}">
-							<div class="filter-option" style="width:100%;display: flex;">
-							    ${this.value}
+							<div id="input" class="filter-option" style="width:100%;display: flex;overflow:hidden;align-items:center;white-space:nowrap;">
+							    <span style="height:16px;display:inline-flex;align-items:center;">${this.value}</span>
 							</div>
 							<vv-icon name="close-circle-fill" @click="${this.clickClearHandler}" style="display: inline-flex;align-items: center;width: 1.25em;font-size: inherit;border: none;background: none;padding: 0px;cursor: pointer;margin-right:8px"></vv-icon>
 							<vv-icon name="calendar" style="display: inline-flex;align-items: center;width: 1.25em;font-size: inherit;border: none;background: none;padding: 0px;color:#ababab"></vv-icon>
@@ -968,9 +960,9 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
                                         <ul class="list-unstyled">
                                             <li class="collapse show">
                                                 <div class="datepicker">
-                                                <div class="datepicker-days" style="${this.mode != 'date'?'display:none;':''}">
+                                                <div class="datepicker-days" style="${(this.modeSwitch != undefined && this.modeSwitch != 'date')||(this.modeSwitch == undefined && this.mode != 'date')?'display:none;':''}">
                                                     <table class="table table-sm">
-                                                        <thead><tr><th class="prev" data-action="previous"><span class="ki ki-arrow-back" title="上月" @click="${this.prevClickHandler}"></span></th><th class="picker-switch" data-action="pickerSwitch" colspan="5" title="切换月" @click="${this.switchClickHandler}">${this.getDateSwitchRender()}</th><th class="next" data-action="next"><span class="ki ki-arrow-next" title="下月" @click="${this.nextClickHandler}"></span></th></tr>
+                                                        <thead><tr><th class="prev" data-action="previous" title="上月" @click="${this.prevClickHandler}"><svg class="icon" viewBox="0 0 1024 1024"><path d="M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8c-16.4 12.8-16.4 37.5 0 50.3l450.8 352.1c5.3 4.1 12.9 0.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z"></path></svg></th><th class="picker-switch" data-action="pickerSwitch" colspan="5" title="切换月" @click="${this.switchClickHandler}">${this.getDateSwitchRender()}</th><th class="next" data-action="next" title="下月" @click="${this.nextClickHandler}"><svg class="icon" viewBox="0 0 1024 1024"><path d="M765.7 486.8L314.9 134.7c-5.3-4.1-12.9-0.4-12.9 6.3v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1c16.4-12.8 16.4-37.6 0-50.4z"></path></svg></th></tr>
                                                         <tr><th class="dow">日</th><th class="dow">一</th><th class="dow">二</th><th class="dow">三</th><th class="dow">四</th><th class="dow">五</th><th class="dow">六</th></tr></thead>
                                                         <tbody id="dates">
                                                             <!--<tr><td data-action="selectDay" data-day="09/25/2022" class="day old weekend">25</td><td data-action="selectDay" data-day="09/26/2022" class="day old">26</td><td data-action="selectDay" data-day="09/27/2022" class="day old">27</td><td data-action="selectDay" data-day="09/28/2022" class="day old">28</td><td data-action="selectDay" data-day="09/29/2022" class="day old">29</td><td data-action="selectDay" data-day="09/30/2022" class="day old">30</td><td data-action="selectDay" data-day="10/01/2022" class="day weekend">1</td></tr>
@@ -983,22 +975,26 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <div class="datepicker-months" style="${this.mode != 'month'?'display:none;':''}">
+                                                <div class="datepicker-months" style="${(this.modeSwitch != undefined && this.modeSwitch != 'month')||(this.modeSwitch == undefined && this.mode != 'month')?'display:none;':''}">
                                                     <table class="table-condensed">
-                                                        <thead><tr><th class="prev" data-action="previous"><span class="ki ki-arrow-back" title="前年" @click="${this.prevMonthClickHandler}"></span></th><th class="picker-switch" data-action="pickerSwitch" colspan="5" title="切换年" @click="${this.switchClickHandler}">${this.getMonthSwitchRender()}</th><th class="next" data-action="next"><span class="ki ki-arrow-next" title="下年" @click="${this.nextMonthClickHandler}"></span></th></tr></thead>
+                                                        <thead><tr>
+                                                        <th class="prev" data-action="previous" title="前年" @click="${this.prevMonthClickHandler}"><svg class="icon" viewBox="0 0 1024 1024"><path d="M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8c-16.4 12.8-16.4 37.5 0 50.3l450.8 352.1c5.3 4.1 12.9 0.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z"></path></svg></th>
+                                                        <th class="picker-switch" data-action="pickerSwitch" colspan="5" title="切换年" @click="${this.switchClickHandler}">${this.getMonthSwitchRender()}</th>
+                                                        <th class="next" title="下年" @click="${this.nextMonthClickHandler}" data-action="next"><svg class="icon" viewBox="0 0 1024 1024"><path d="M765.7 486.8L314.9 134.7c-5.3-4.1-12.9-0.4-12.9 6.3v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1c16.4-12.8 16.4-37.6 0-50.4z"></path></svg></th>
+                                                        </tr></thead>
                                                         <tbody>
                                                             <tr><td colspan="7">
                                                                 <!--<span data-action="selectMonth" class="month">一月</span><span data-action="selectMonth" class="month">二月</span><span data-action="selectMonth" class="month">三月</span><span data-action="selectMonth" class="month">四月</span><span data-action="selectMonth" class="month">五月</span><span data-action="selectMonth" class="month">六月</span><span data-action="selectMonth" class="month">七月</span><span data-action="selectMonth" class="month">八月</span><span data-action="selectMonth" class="month">九月</span><span data-action="selectMonth" class="month active">十月</span><span data-action="selectMonth" class="month">十一月</span><span data-action="selectMonth" class="month">十二月</span>-->
-                                                                ${['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'].map((v,i) => html`<span data-action="selectMonth" data-month="${i+1}" @click="${this.monthCellClickHandler}" class="month ${i == new Date().getMonth()?'active':''}">${v}</span>`)}
+                                                                ${['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'].map((v,i) => html`<span data-action="selectMonth" data-month="${(i+1+'').padStart(2,'0')}" @click="${this.monthCellClickHandler}" class="month ${i == new Date().getMonth()?'active':''}">${v}</span>`)}
                                                             </td></tr>
                                                         </tbody>
                                                      </table>
                                                  </div>
-                                                 <div class="datepicker-years" style="${this.mode != 'year'?'display:none;':''}">
+                                                 <div class="datepicker-years" style="${(this.modeSwitch != undefined && this.modeSwitch != 'year')||(this.modeSwitch == undefined && this.mode != 'year')?'display:none;':''}">
                                                     <table class="table-condensed">
-                                                        <thead><tr><th class="prev" data-action="previous"><span class="ki ki-arrow-back" title="前20年" @click="${this.prevYearClickHandler}"></span></th><th class="picker-switch" data-action="pickerSwitch" colspan="5" title="选择年" @click="${this.switchClickHandler}">${this.getYearSwitchRender()}</th><th class="next" data-action="next" @click="${this.nextYearClickHandler}"><span class="ki ki-arrow-next" title="下20年"></span></th></tr></thead>
+                                                        <thead><tr><th class="prev" data-action="previous" title="前20年" @click="${this.prevYearClickHandler}"><svg class="icon" viewBox="0 0 1024 1024"><path d="M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8c-16.4 12.8-16.4 37.5 0 50.3l450.8 352.1c5.3 4.1 12.9 0.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z"></path></svg></th><th class="picker-switch" data-action="pickerSwitch" colspan="5" title="选择年" @click="${this.switchClickHandler}">${this.getYearSwitchRender()}</th><th class="next" data-action="next" title="下20年" @click="${this.nextYearClickHandler}"><svg class="icon" viewBox="0 0 1024 1024"><path d="M765.7 486.8L314.9 134.7c-5.3-4.1-12.9-0.4-12.9 6.3v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1c16.4-12.8 16.4-37.6 0-50.4z"></path></svg></th></tr></thead>
                                                         <tbody>
-                                                            <tr><td colspan="7">${this.getYearRender().map((v,i) => html`<span data-action="selectYear" @click="${this.yearCellClickHandler}" class="year ${v == new Date().getFullYear()?'active':''}">${v}</span>`)}</td></tr>
+                                                            <tr><td colspan="7">${this.getYearRender().map((v,i) => html`<span data-action="selectYear" data-year="${v}" @click="${this.yearCellClickHandler}" class="year ${v == new Date().getFullYear()?'active':''}">${v}</span>`)}</td></tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -1010,7 +1006,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 							</div>`;
     }
     getYearSwitchRender(){
-        if(this.mode != 'year')
+        if(this.modeSwitch != 'year')
             return [];
 
         this._value = this._value?this._value:this.value;
@@ -1019,7 +1015,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
         return years[0] + '-' + years[years.length-1]
     }
     getYearRender(){
-        if(this.mode != 'year')
+        if(this.modeSwitch != 'year')
             return [];
 
         this._value = this._value?this._value:this.value;
@@ -1036,20 +1032,22 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
         return year + '年' + month + '月';
     }
     getDateRender(){debugger
-        if(this.mode != 'date')
+        if(this.modeSwitch != 'date')
             return [];
 
         this._value = this._value?this._value:this.value;
         const [year,month,day] = this._value?this.toDate(new Date(this._value)):this.toDate(new Date());
         this._value = year+'-'+month+'-'+day;
 
-                console.log('month',month)
+                console.log('month',month,'year',year);
+                const current_year_month = year +'-'+ (month+"").padStart(2,"0")
                 const days = this.getDays(year, month);
                 const [n_year,n_month,n_day] = this.toDate(new Date);
-                console.log('days',days)
+                console.log('days',days,n_year,n_month,n_day)
                 // this.days.forEach((el,i)=> {
                 //     const [_year, _month, _day] = days[i].split('-');
                 // });
+                const now_date = this.getCurrentDateStr();
                 const ds = Array.from({ length: 6 },
                     (v, i) => {
                         console.log('d'+days[7*i+1])
@@ -1061,13 +1059,13 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
                         const [m_date5,m_day5] = [days[7*i+5],days[7*i+5].split('-')[2]];
                         const [m_date6,m_day6] = [days[7*i+6],days[7*i+6].split('-')[2]];
                         return html`<tr>
-                            <td data-action="selectDay" data-day="${m_date0}" @click="${this.dateCellClickHandler}" class="day old weekend ${m_day0==n_day?'today':''} ${this.value==m_date0?'active':''}">${m_day0}</td>
-                            <td data-action="selectDay" data-day="${m_date1}" @click="${this.dateCellClickHandler}" class="day old ${m_day1==n_day?'today':''} ${this.value==m_date1?'active':''}">${m_day1}</td>
-                            <td data-action="selectDay" data-day="${m_date2}" @click="${this.dateCellClickHandler}" class="day old ${m_day2==n_day?'today':''} ${this.value==m_date2?'active':''}">${m_day2}</td>
-                            <td data-action="selectDay" data-day="${m_date3}" @click="${this.dateCellClickHandler}" class="day old ${m_day3==n_day?'today':''} ${this.value==m_date3?'active':''}">${m_day3}</td>
-                            <td data-action="selectDay" data-day="${m_date4}" @click="${this.dateCellClickHandler}" class="day old ${m_day4==n_day?'today':''} ${this.value==m_date4?'active':''}">${m_day4}</td>
-                            <td data-action="selectDay" data-day="${m_date5}" @click="${this.dateCellClickHandler}" class="day old ${m_day5==n_day?'today':''} ${this.value==m_date5?'active':''}">${m_day5}</td>
-                            <td data-action="selectDay" data-day="${m_date6}" @click="${this.dateCellClickHandler}" class="day weekend ${m_day6==n_day?'today':''} ${this.value==m_date6?'active':''}">${m_day6}</td>
+                            <td data-action="selectDay" data-day="${m_date0}" @click="${this.dateCellClickHandler}" class="day ${m_date0.substr(0,7)==current_year_month?'':'old'} weekend ${m_date0==now_date?'today':''} ${this.value==m_date0?'active':''}">${m_day0}</td>
+                            <td data-action="selectDay" data-day="${m_date1}" @click="${this.dateCellClickHandler}" class="day ${m_date1.substr(0,7)==current_year_month?'':'old'} ${m_date1==now_date?'today':''} ${this.value==m_date1?'active':''}">${m_day1}</td>
+                            <td data-action="selectDay" data-day="${m_date2}" @click="${this.dateCellClickHandler}" class="day ${m_date2.substr(0,7)==current_year_month?'':'old'} ${m_date2==now_date?'today':''} ${this.value==m_date2?'active':''}">${m_day2}</td>
+                            <td data-action="selectDay" data-day="${m_date3}" @click="${this.dateCellClickHandler}" class="day ${m_date3.substr(0,7)==current_year_month?'':'old'} ${m_date3==now_date?'today':''} ${this.value==m_date3?'active':''}">${m_day3}</td>
+                            <td data-action="selectDay" data-day="${m_date4}" @click="${this.dateCellClickHandler}" class="day ${m_date4.substr(0,7)==current_year_month?'':'old'} ${m_date4==now_date?'today':''} ${this.value==m_date4?'active':''}">${m_day4}</td>
+                            <td data-action="selectDay" data-day="${m_date5}" @click="${this.dateCellClickHandler}" class="day ${m_date5.substr(0,7)==current_year_month?'':'old'} ${m_date5==now_date?'today':''} ${this.value==m_date5?'active':''}">${m_day5}</td>
+                            <td data-action="selectDay" data-day="${m_date6}" @click="${this.dateCellClickHandler}" class="day weekend ${m_date6==now_date?'today':''} ${this.value==m_date6?'active':''}">${m_day6}</td>
                             </tr>`
                     }
                 )//.join("")
@@ -1081,6 +1079,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
     }
     clickClearHandler(e) {
         console.log('clear',e.target);  //
+        e.stopPropagation();
         this.value = "";
     }
     blurPopupHandler(e){debugger
@@ -1146,12 +1145,12 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
         this.requestUpdate();
     }
     switchClickHandler(){
-        switch (this.mode) {
+        switch (this.modeSwitch) {
             case 'date':
-                this.mode = 'month';
+                this.modeSwitch = 'month';
                 break;
             case 'month':
-                this.mode = 'year';
+                this.modeSwitch = 'year';
                 break;
             // case 'year':不切换，要求选择
             //     this.mode = 'date';
@@ -1173,11 +1172,17 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
     }
     monthCellClickHandler(e){debugger
         const item = e.target.closest('span');
-        console.log('month cell click',this._value);
+        console.log('month cell click',this._value,item);
         //let [year,month,day] = this.toDate(new Date(this._value));
+        if(this.mode == "month"){
+            let arr = this._value.split('-');
+            this.value = arr[0] + '-' + item.dataset.month;
+            this.renderRoot.querySelector("vv-popup2").show = false;
+            return;
+        }
         if(item){
             //const len = new Date(year,item.innerText,0).getDate();
-            this.mode = 'date';
+            this.modeSwitch = 'date';
             let arr = this._value.split('-');
             this._value = arr[0] + '-' + item.dataset.month + '-' + arr[2];
             //this.value = item.date+'-'+(day>len?len:day);
@@ -1185,23 +1190,31 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
     }
     yearCellClickHandler(e){
         const item = e.target.closest('span');
-        console.log('year cell click',this._value);
+        console.log('year cell click',this._value,item);
         //let [year,month,day] = this.toDate(new Date(this._value));
+        if(this.mode == "year"){
+            this.value = item.dataset.year;
+            this.renderRoot.querySelector("vv-popup2").show = false;
+            return;
+        }
         if(item){
             //const len = new Date(year,item.innerText,0).getDate();
-            this.mode = 'month';
+            this.modeSwitch = 'month';
             let arr = this._value.split('-');
             this._value = item.innerText + '-' + arr[1] + '-' + arr[2];
         }
     }
     connectedCallback() {
         super.connectedCallback();
-        //document.addEventListener('mousedown',this.setpop);
+        document.addEventListener('mousedown',this.setpop);
     }
-    setpop = (ev) => {
+    setpop = (ev) => {//debugger
         const path = ev.path || (ev.composedPath && ev.composedPath());//debugger
-        if(!path.includes(this) && ev.which == '1' && !path.includes(ev.path.includes(this.renderRoot.getElementById("vvDate").children[0]))){
-            this.renderRoot.querySelector("vv-popup2").show = false;
+        if(!path.includes(this) && ev.which == '1' && !path.includes(this.renderRoot.getElementById("vvDate").children[0])){
+            if(this.renderRoot.querySelector("vv-popup2") && this.renderRoot.querySelector("vv-popup2").show){
+                ev.stopPropagation();
+                this.renderRoot.querySelector("vv-popup2").show = false;
+            }
         }
         console.log('date mousedown ev',ev.target);
         console.log('path',path);
@@ -1226,8 +1239,8 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
         const lastdays = new Date(year,month-1,0).getDate();
         const days = new Date(year,month,0).getDate();
         const week = new Date(year,month-1,1).getDay();
-        const prev = Array.from({length:week},(el,i)=>(month==1?year-1:year)+'-'+(month==1?12:month-1)+'-'+(lastdays+i-week+1));
-        const current = Array.from({length:days},(el,i)=>year+'-'+month+'-'+(i+1));
+        const prev = Array.from({length:week},(el,i)=>(month==1?year-1:year)+'-'+((month==1?12:month-1)+'').padStart(2,"0")+'-'+(lastdays+i-week+1+'').padStart(2,"0"));
+        const current = Array.from({length:days},(el,i)=>year+'-'+(month+'').padStart(2,"0")+'-'+(i+1+'').padStart(2,"0"));
         const next = Array.from({length:42 - days - week},(el,i)=>(month==12?year+1:year)+'-'+(month==12?1:month+1)+'-'+(i+1));
         return [...prev,...current,...next];
     }
@@ -1236,4 +1249,6 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
         return Array.from({length:20},(el,i)=>start+i);
     }
 }
-window.customElements.define('vv-date', VvDate);
+if(!customElements.get('vv-date')) {
+    window.customElements.define('vv-date', VvDate);
+}

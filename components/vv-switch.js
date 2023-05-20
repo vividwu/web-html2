@@ -75,7 +75,7 @@ export class VvSwitch extends LitElement {
     constructor() {
         super();
         this.type = "switch";
-		//this._checked = false;
+        this.checked = false;
     }
     render() {debugger
         return html`<input type="checkbox" id="switch" ?checked=${this.checked} @change="${this.changeHandler}"/><label for="switch"></label>`

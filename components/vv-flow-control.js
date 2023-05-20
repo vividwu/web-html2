@@ -8,6 +8,7 @@ export class VvFlowControl extends LitElement {
             type: String,
             size: String,
             formType: String,  //apply approve view
+            dataurl: String,
             hide: {type: Boolean, reflect: true}
         }
     }

@@ -50,7 +50,7 @@ constructor() {
     }
     set value(value) {
         this._value = value;
-        if (this.shadowRoot.getElementById("input"))
+        if (this.shadowRoot && this.shadowRoot.getElementById("input"))
             this.shadowRoot.getElementById("input").value = this._value;
     }
   render(){

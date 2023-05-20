@@ -55,9 +55,9 @@ const routes = [{
 				   },/**/
 					{
 						path: 'approve',
-						component: 'approve-page',
+						component: 'pg-flow-approve',
 						action: async () => {
-							await import('./flow/apply-page.js');
+							await import('./flow/pg-flow-approve.js');
 						},
 					},
 					{
@@ -84,6 +84,13 @@ const routes = [{
 						component: 'pg-dept-user',
 						action: async () => {
 							await import('./org/pg-dept-user.js');
+						},
+					},
+					{
+						path: 'it-soft',
+							component: 'pg-it-soft',
+						action: async () => {
+							await import('./org/pg-it-soft.js');
 						},
 					},
 					{

@@ -36,7 +36,8 @@ export class VvTabContent extends LitElement {
         this.type = "tab-content";
     }
     render() {debugger
-        return html`<div style="width: 100%;height: 100%;transition: .8s;" id="tp1" role="tabpanel" key="${this.key}"><slot></slot></div>`
+        let akey = this.parentElement.activekey;
+        return html`<div style="width: 100%;height: 100%;transition: .8s;" id="tp1" role="tabpanel" key="${this.key}" class="${this.key==akey?'tab-pane fade active show':'tab-pane fade'}"><slot></slot></div>`
     }
     connectedCallback() {
         super.connectedCallback();

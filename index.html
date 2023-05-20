@@ -20,7 +20,7 @@
 			</style>
 		<!--end::Layout Themes-->
 		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
-		<script type="module" src="/home/pg-index.js"></script>
+		<script type="module" src="/home/pg-index.js?v=0.1"></script>
 		<script type="module" src="/home/pg-form-design.js"></script>
 		<script type="module" src="/router.js"></script>
 		<script type="module" src="/home/sec-header-menu.js"></script>
@@ -28,7 +28,10 @@
 		<script type="module">
 			import VvMessage from '/components/vv-message.js';
 			window.VvMessage = VvMessage;
+			import VvLoading from '/components/vv-loading.js';
+			window.VvLoading = VvLoading;
 		</script>
+		<link rel="stylesheet" href="assets/css/style.base.css">
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->
